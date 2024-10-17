@@ -12,10 +12,9 @@ function NavDesktop() {
 	return (
 		<>
 			<div className="hidden min-h-screen border-r md:block md:min-w-[220px] lg:min-w-[280px]">
-				<div className="flex h-full max-h-screen flex-col gap-2">
-					<div className="flex h-14 items-center border-b px-4 lg:h-[60px] lg:px-6">
-					</div>
-					<div className="flex-1">
+				<div className="flex justify-center h-full max-h-screen flex-col gap-2">
+					{/* <div className="flex h-[60px] items-center border-b px-4 lg:h-[60px] lg:px-6"></div> */}
+					<div className="">
 						<nav className="grid items-start px-2 text-sm font-medium lg:px-4">
 							<NavLink
 								to="/"

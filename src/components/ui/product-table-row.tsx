@@ -22,9 +22,6 @@ type ProductTableRowProps = {
 };
 
 function ProductTableRow( {product}: ProductTableRowProps ) {
-
-  console.log(product)
-  
   return (
     <>
       <TableRow>
@@ -37,6 +34,9 @@ function ProductTableRow( {product}: ProductTableRowProps ) {
         <TableCell>R$ {product.price}</TableCell>
         <TableCell className="hidden md:table-cell">
           50
+        </TableCell>
+        <TableCell className="hidden md:table-cell">
+          25
         </TableCell>
         <TableCell className="hidden md:table-cell">
           24/06/2024 08:38
@@ -54,9 +54,9 @@ function ProductTableRow( {product}: ProductTableRowProps ) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem>Edit</DropdownMenuItem>
-              <DropdownMenuItem>Delete</DropdownMenuItem>
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              <DropdownMenuItem>Editar</DropdownMenuItem>
+              <DropdownMenuItem>Deletar</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>
