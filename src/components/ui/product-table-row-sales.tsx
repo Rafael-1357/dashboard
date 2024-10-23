@@ -4,34 +4,42 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
-type ProductTableRowProps = {
-  product: {
-    id: number;
-    name: string;
-    value: number;
-  };
-  onRemove: () => void; // nova prop para remover o produto
+type Product = {
+  id: number;
+  name: string;
+  value: number;
 };
 
-function ProductTableRowSales({ product, onRemove }: ProductTableRowProps) {
+type ProductTableRowProps = {
+  product: Product;
+  onRemove: () => void; 
+  onCalculate: (qtd: number, product: number) => void;
+};
+
+function ProductTableRowSales({ product, onRemove, onCalculate }: ProductTableRowProps) {
 
   const [productQuantity, setProductQuantity] = useState(1)
+  const [total, setTotal] = useState(product.value)
 
   const handleIncrement = () => {
     setProductQuantity(productQuantity + 1)
-    console.log(productQuantity)
+    setTotal(prevValue => prevValue + product.value)
   }
   
   const handleDecrement = () => {
     if (productQuantity - 1 === 0) {
-      onRemove(); // remove o produto se a quantidade atingir 0
+      onRemove(); 
     } else {
       setProductQuantity(productQuantity - 1);
+      setTotal(prevValue => prevValue - product.value)
     }
-    console.log(productQuantity)
   }
+
+  useEffect(() => {
+    onCalculate(productQuantity, product.id)
+  }, [productQuantity])
 
   return (
     <>
@@ -68,7 +76,7 @@ function ProductTableRowSales({ product, onRemove }: ProductTableRowProps) {
           </div>
         </TableCell>
         <TableCell>R$ {product.value}</TableCell>
-        <TableCell>R$ {product.value * productQuantity}</TableCell>
+        <TableCell>R$ {total}</TableCell>
       </TableRow>
     </>
   )

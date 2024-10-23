@@ -55,8 +55,8 @@ function ProductTableRow( {product}: ProductTableRowProps ) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem>Editar</DropdownMenuItem>
-              <DropdownMenuItem>Deletar</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">Editar</DropdownMenuItem>
+              <DropdownMenuItem className="cursor-pointer">Deletar</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>

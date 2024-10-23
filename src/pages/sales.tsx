@@ -6,6 +6,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { useEffect, useState } from "react"
 import ProductTableRowSales from "@/components/ui/product-table-row-sales"
+import { Button } from "@/components/ui/button"
 
 type Product = {
   id: number;
@@ -16,12 +17,9 @@ type Product = {
 function Sales() {
 
   const [products, setProducts] = useState<Product[]>([]);
+  const [total, setTotal] = useState(0)
 
   useEffect(() => {
-    // fetch('https://fakestoreapi.com/products?limit=10')
-    //   .then(res => res.json())
-    //   .then(json => setProducts(json));
-
     const arrayProducts = [
       {
         id: 1,
@@ -42,7 +40,7 @@ function Sales() {
         id: 4,
         name: 'Papsi',
         value: 12,
-      },
+      }
     ]
 
     setProducts(arrayProducts);
@@ -52,6 +50,14 @@ function Sales() {
     setProducts(products.filter(product => product.id !== productId));
   };
 
+  const calculateTotalValue = (qtd: number, productID: number) => {
+    products.map(product => {
+      if(product.id == productID){
+        
+      }
+    })
+  }
+
 
   return (
     <>
@@ -59,8 +65,9 @@ function Sales() {
         <NavDesktop></NavDesktop>
         <NavMobile></NavMobile>
         <div className="w-full h-screen bg-muted/40 flex gap-4 p-4">
-          <div className="w-4/6 flex flex-col gap-4">
-            <div className="w-full h-20">
+
+          <div className="w-4/6 flex flex-col justify-between gap-4">
+            <div className="w-full">
               <form className="ml-auto flex-1 sm:flex-initial">
                 <div className="relative">
                   <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -72,9 +79,9 @@ function Sales() {
                 </div>
               </form>
             </div>
-            <div>
-              <Card className="grid grid-rows-[90px 1fr 60px]">
-                <CardContent className="overflow-auto">
+            <div className="h-[90%]">
+              <Card className="h-full overflow-auto">
+                <CardContent>
                   <Table >
                     <TableHeader>
                       <TableRow>
@@ -86,14 +93,20 @@ function Sales() {
                     </TableHeader>
                     <TableBody>
                       {
-                        products.length != 0 
+                        products.length != 0
                           ?
-                            products && products.map((product: any) => (
-                              <ProductTableRowSales key={product.id} product={product} onRemove={() => handleRemoveProduct(product.id)}/>
-                            ))
+                          products && products.map((product: any) => (
+                            <ProductTableRowSales
+                              key={product.id}
+                              product={product}
+                              onRemove={() => handleRemoveProduct(product.id)}
+                              onCalculate={(qtd, productId) => calculateTotalValue(qtd, productId)}
+                            />
+                          ))
                           :
-                          <TableCell colSpan={4} className="text-center">
-                            <Search/>
+                          <TableCell colSpan={4} className="text-center py-12">
+                            <Search className="w-full h-40 text-9xl" />
+                            <h1 className="text-2xl">Nenhum produto adicionado</h1>
                           </TableCell>
                       }
 
@@ -103,8 +116,10 @@ function Sales() {
               </Card>
             </div>
           </div>
-          <div className="w-2/6 flex flex-col justify-end gap-2">
 
+          <div className="w-2/6 p-4 bg-card border rounded-xl flex flex-col justify-end gap-2">
+            <h1 className="w-full h-9 text-white text-xl bg-purple-400/40 rounded-md flex justify-center items-center">Total R$ {total.toFixed(2)}</h1>
+            <Button className="bg-purple-500">Finalizar venda</Button>
           </div>
         </div>
       </div>
