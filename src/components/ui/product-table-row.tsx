@@ -26,8 +26,7 @@ type ProductTableRowProps = {
     total_in_stock: {
       value: number;
       unit_name: string;
-    };
-    price: string;
+    }
   };
 };
 
