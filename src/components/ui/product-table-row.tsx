@@ -1,3 +1,5 @@
+import { format, parseISO } from "date-fns"
+import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,35 +13,50 @@ import {
   TableCell,
   TableRow,
 } from "@/components/ui/table"
-import { Button } from "@/components/ui/button"
+
 
 type ProductTableRowProps = {
   product: {
     id: string;
-    title: string;
+    active: string;
+    name: string;
+    category: string;
+    created_at: string;
+    total_revenue: number;
+    total_in_stock: {
+      value: number;
+      unit_name: string;
+    };
     price: string;
   };
 };
 
-function ProductTableRow( {product}: ProductTableRowProps ) {
+function ProductTableRow({ product }: ProductTableRowProps) {
+
   return (
     <>
       <TableRow>
         <TableCell className="font-medium">
-          {product.title}
+          {product.name}
         </TableCell>
         <TableCell>
-          <Badge variant="outline">Ativo</Badge>
-        </TableCell>
-        <TableCell>R$ {product.price}</TableCell>
-        <TableCell className="hidden md:table-cell">
-          50
+          <Badge variant="outline">{product.active ? 'Ativo' : 'Desativado'}</Badge>
         </TableCell>
         <TableCell className="hidden md:table-cell">
-          25
+          {product.total_in_stock.value}
         </TableCell>
         <TableCell className="hidden md:table-cell">
-          24/06/2024 08:38
+          {
+            Intl.NumberFormat('pt-BR', {
+              style: 'currency',
+              currency: 'BRL',
+            }).format(product.total_revenue)
+          }
+        </TableCell>
+        <TableCell className="hidden md:table-cell">
+          {
+            format(parseISO(product.created_at), 'dd/MM/yyyy HH:mm:ss')
+          }
         </TableCell>
         <TableCell>
           <DropdownMenu>

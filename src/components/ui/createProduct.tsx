@@ -3,6 +3,7 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast"
 import {
   Form,
   FormControl,
@@ -24,9 +25,7 @@ const productCreateSch = z.object({
   name: z.string().min(2, {
     message: "Insira pelo menos 2 caracteres",
   }),
-  status: z.string({
-    required_error: "Selecione o estado",
-  }),
+  status: z.string().min(1, "Selecione um estado"),
   category: z.string().min(2, {
     message: "Insira pelo menos 2 caracteres"
   }),
@@ -36,6 +35,7 @@ const productCreateSch = z.object({
 })
 
 function CreateProduct() {
+  const { toast } = useToast()
 
   const form = useForm<z.infer<typeof productCreateSch>>({
     resolver: zodResolver(productCreateSch),
@@ -155,7 +155,19 @@ function CreateProduct() {
           )}
         />
         <div className="flex justify-end">
-          <Button type="submit" className="bg-purple-500">Adicionar produto</Button>
+          <Button
+            type="submit"
+            className="text-white bg-purple-500"
+            onClick={() => {
+              toast({
+                variant: "created",
+                title: "Produto adicionado",
+                description: "Disponível na lista de produtos",
+              })
+            }}
+            >
+              Adicionar produto
+          </Button>
         </div>
       </form>
     </Form>

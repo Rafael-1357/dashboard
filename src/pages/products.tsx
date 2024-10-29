@@ -43,7 +43,15 @@ import { Separator } from "@/components/ui/separator";
 
 type Product = {
   id: string;
-  title: string;
+  active: string;
+  name: string;
+  category: string;
+  created_at: string;
+  total_revenue: number;
+  total_in_stock: {
+    value: number;
+    unit_name: string;
+  };
   price: string;
 };
 
@@ -51,26 +59,17 @@ function Products() {
 
   const [products, setProducts] = useState<Product[]>([]);
 
-  const arrayProducts = [
-    {
-      id: '1',
-      title: 'Coca Cola 2L',
-      price: '12.50'
-    },
-    {
-      id: '2',
-      title: 'Guaraná 2L',
-      price: '10.20'
-    },
-    {
-      id: '3',
-      title: 'Vodka',
-      price: '17.30'
-    },
-  ];
-
   useEffect(() => {
-    setProducts(arrayProducts);
+
+    fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
+      headers: {
+        'Content-type': 'application/json',
+        'Authorization': import.meta.env.VITE_API_TOKEN
+      },
+    }).then(response => response.json())
+      .then(response => {
+        setProducts(response.data)
+      })
   }, []);
 
   function paginate(action: string) {
@@ -110,12 +109,12 @@ function Products() {
                   </SheetContent>
                 </Sheet>
               </div>
-              <div className="overflow-auto">
-                <Card>
+              <div className="h-[90%]">
+                <Card className="h-full overflow-auto">
                   {
-                    arrayProducts.length != 0
+                    products.length != 0
                       ?
-                      <Card className="h-full border-0 grid grid-rows-[90px 1fr 60px]">
+                      <Card className="h-full overflow-auto border-0 grid grid-rows-[90px 1fr 60px]">
                         <CardHeader>
                           <CardTitle>Produtos</CardTitle>
                         </CardHeader>
@@ -132,12 +131,6 @@ function Products() {
                                 <TableHead className="cursor-pointer">
                                   <div className="flex items-center gap-x-2">
                                     Estado
-                                    <CaretSortIcon />
-                                  </div>
-                                </TableHead>
-                                <TableHead className="cursor-pointer">
-                                  <div className="flex items-center gap-x-2">
-                                    Valor
                                     <CaretSortIcon />
                                   </div>
                                 </TableHead>
