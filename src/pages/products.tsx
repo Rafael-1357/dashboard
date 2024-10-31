@@ -27,7 +27,7 @@ import {
   PaginationItem,
   PaginationLink,
   PaginationNext,
-  PaginationPrevious
+  PaginationPrevious,
 } from "@/components/ui/pagination";
 import {
   Sheet,
@@ -48,7 +48,7 @@ type Product = {
   total_in_stock: {
     value: number;
     unit_name: string;
-  }
+  };
 };
 
 function Products() {
@@ -56,22 +56,59 @@ function Products() {
   const [meta, setMeta] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  useEffect(() => {
-    fetchProducts(`${import.meta.env.VITE_API_URL}/api/products?page=${currentPage}`);
-  }, [currentPage]);
+  const [sortOptions, setSortOptions] = useState<{
+    field: string | null;
+    direction: "asc" | "desc" | null;
+  }>({
+    field: null,
+    direction: null,
+  });
 
-  const fetchProducts = (url: string) => {
+  const [activeFilter, setActiveFilter] = useState<1 | 0 | null>(null);
+
+  useEffect(() => {
+    fetchProducts();
+  }, [currentPage, sortOptions, activeFilter]);
+
+  const fetchProducts = () => {
+    const baseUrl = `${import.meta.env.VITE_API_URL}/api/products?page=${currentPage}`;
+    const sortParam = sortOptions.field
+      ? `&sort[0]=${sortOptions.field}${sortOptions.direction === "desc" ? ":desc" : ""}`
+      : "";
+    const activeParam = activeFilter !== null
+      ? `&filters[active][$eq]=${activeFilter}`
+      : "";
+    const url = baseUrl + sortParam + activeParam;
+
+    console.log(url);
+
     fetch(url, {
       headers: {
-        'Content-type': 'application/json',
-        'Authorization': import.meta.env.VITE_API_TOKEN
+        "Content-type": "application/json",
+        Authorization: import.meta.env.VITE_API_TOKEN,
       },
     })
-    .then(response => response.json())
-    .then(response => {
-      setProducts(response.data);
-      setMeta(response.meta);
+      .then((response) => response.json())
+      .then((response) => {
+        setProducts(response.data);
+        setMeta(response.meta);
+      });
+  };
+
+  const handleSort = (field: string) => {
+    setSortOptions((prevSort) => {
+      if (prevSort.field === field) {
+        const newDirection =
+          prevSort.direction === "asc" ? "desc" : prevSort.direction === "desc" ? null : "asc";
+        return { field: newDirection ? field : null, direction: newDirection };
+      } else {
+        return { field, direction: "asc" };
+      }
     });
+  };
+
+  const toggleActiveFilter = () => {
+    setActiveFilter((prev) => (prev === 1 ? 0 : prev === 0 ? null : 1));
   };
 
   const handlePageChange = (page: number) => {
@@ -83,15 +120,15 @@ function Products() {
   const getPageNumbers = () => {
     const totalPages = meta?.last_page || 1;
     const maxPagesToShow = 3;
-  
+
     let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2));
     let endPage = startPage + maxPagesToShow - 1;
-  
+
     if (endPage > totalPages) {
       endPage = totalPages;
       startPage = Math.max(1, endPage - maxPagesToShow + 1);
     }
-  
+
     const pages = [];
     for (let i = startPage; i <= endPage; i++) {
       pages.push(i);
@@ -131,43 +168,61 @@ function Products() {
               <div className="h-[90%]">
                 <Card className="h-full overflow-auto">
                   {products.length !== 0 ? (
-                    <Card className="h-full overflow-auto border-0 grid grid-rows-[90px_1fr_60px]">
-                      <CardHeader>
-                        <CardTitle>Produtos</CardTitle>
-                      </CardHeader>
-                      <CardContent className="overflow-auto">
+                    <Card className="h-full overflow-auto border-0 grid grid-rows-[25px_1fr_60px]">
+                      <CardHeader></CardHeader>
+                      <CardContent className="pb-0 overflow-auto">
                         <Table>
                           <TableHeader>
                             <TableRow>
                               <TableHead className="cursor-pointer">
-                                <div className="flex items-center gap-x-2">
+                                <Button
+                                  variant={"ghost"}
+                                  className="w-full p-0 flex justify-start items-center gap-x-2"
+                                  onClick={() => handleSort("name")}
+                                >
                                   Nome
                                   <CaretSortIcon />
-                                </div>
+                                </Button>
                               </TableHead>
                               <TableHead className="cursor-pointer">
-                                <div className="flex items-center gap-x-2">
+                                <Button
+                                  variant={"ghost"}
+                                  className="w-full p-0 flex justify-start items-center gap-x-2"
+                                  onClick={toggleActiveFilter}
+                                >
                                   Estado
                                   <CaretSortIcon />
-                                </div>
+                                </Button>
                               </TableHead>
                               <TableHead className="hidden md:table-cell cursor-pointer">
-                                <div className="flex items-center gap-x-2">
+                                <Button
+                                  variant={"ghost"}
+                                  className="w-full p-0 flex justify-start items-center gap-x-2"
+                                  onClick={() => handleSort("total_in_stock")}
+                                >
                                   Total em Estoque
                                   <CaretSortIcon />
-                                </div>
+                                </Button>
                               </TableHead>
                               <TableHead className="hidden md:table-cell cursor-pointer">
-                                <div className="flex items-center gap-x-2">
+                                <Button
+                                  variant={"ghost"}
+                                  className="w-full p-0 flex justify-start items-center gap-x-2"
+                                  onClick={() => handleSort("total_revenue")}
+                                >
                                   Total de Vendas
                                   <CaretSortIcon />
-                                </div>
+                                </Button>
                               </TableHead>
                               <TableHead className="hidden md:table-cell cursor-pointer">
-                                <div className="flex items-center gap-x-2">
+                                <Button
+                                  variant={"ghost"}
+                                  className="w-full p-0 flex justify-start items-center gap-x-2"
+                                  onClick={() => handleSort("created_at")}
+                                >
                                   Criado em
                                   <CaretSortIcon />
-                                </div>
+                                </Button>
                               </TableHead>
                               <TableHead>
                                 <span className="sr-only">Ações</span>
@@ -210,10 +265,7 @@ function Products() {
                       </CardFooter>
                     </Card>
                   ) : (
-                    <div className="text-center py-12">
-                      <LucideShoppingCart className="w-full h-40 text-9xl" />
-                      <h1 className="text-2xl">Nenhum produto encontrado</h1>
-                    </div>
+                    <div className="h-[500px] grid place-content-center">Nenhum produto encontrado</div>
                   )}
                 </Card>
               </div>
