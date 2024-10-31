@@ -11,7 +11,6 @@ import {
   CardContent,
   CardFooter,
   CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Table,
@@ -51,34 +50,32 @@ type Product = {
   };
 };
 
+
 function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [meta, setMeta] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const [sortOptions, setSortOptions] = useState<{
-    field: string | null;
-    direction: "asc" | "desc" | null;
-  }>({
+  const [sortOptions, setSortOptions] = useState<{ field: string | null; direction: "asc" | "desc" | null }>({
     field: null,
     direction: null,
   });
 
-  const [activeFilter, setActiveFilter] = useState<1 | 0 | null>(null);
+  const [activeFilter, setActiveFilter] = useState<number | null>(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchProducts();
-  }, [currentPage, sortOptions, activeFilter]);
+  }, [currentPage, sortOptions, activeFilter, searchTerm]);
 
   const fetchProducts = () => {
     const baseUrl = `${import.meta.env.VITE_API_URL}/api/products?page=${currentPage}`;
     const sortParam = sortOptions.field
       ? `&sort[0]=${sortOptions.field}${sortOptions.direction === "desc" ? ":desc" : ""}`
       : "";
-    const activeParam = activeFilter !== null
-      ? `&filters[active][$eq]=${activeFilter}`
-      : "";
-    const url = baseUrl + sortParam + activeParam;
+    const activeParam = activeFilter !== null ? `&filters[active][$eq]=${activeFilter}` : "";
+    const searchParam = searchTerm ? `&filters[name][$startsWith]=${searchTerm}` : "";
+    const url = baseUrl + sortParam + activeParam + searchParam;
 
     console.log(url);
 
@@ -98,8 +95,7 @@ function Products() {
   const handleSort = (field: string) => {
     setSortOptions((prevSort) => {
       if (prevSort.field === field) {
-        const newDirection =
-          prevSort.direction === "asc" ? "desc" : prevSort.direction === "desc" ? null : "asc";
+        const newDirection = prevSort.direction === "asc" ? "desc" : prevSort.direction === "desc" ? null : "asc";
         return { field: newDirection ? field : null, direction: newDirection };
       } else {
         return { field, direction: "asc" };
@@ -107,8 +103,12 @@ function Products() {
     });
   };
 
-  const toggleActiveFilter = () => {
-    setActiveFilter((prev) => (prev === 1 ? 0 : prev === 0 ? null : 1));
+  const handleActiveFilter = () => {
+    setActiveFilter((prevFilter) => {
+      if (prevFilter === null) return 1;
+      if (prevFilter === 1) return 0;
+      return null;
+    });
   };
 
   const handlePageChange = (page: number) => {
@@ -148,6 +148,8 @@ function Products() {
                 <Input
                   placeholder="Filtrar produtos"
                   className="max-w-sm h-9 bg-white focus-visible:ring-0"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <Sheet>
                   <SheetTrigger asChild>
@@ -169,57 +171,38 @@ function Products() {
                 <Card className="h-full overflow-auto">
                   {products.length !== 0 ? (
                     <Card className="h-full overflow-auto border-0 grid grid-rows-[25px_1fr_60px]">
-                      <CardHeader></CardHeader>
+                      <CardHeader>
+                      </CardHeader>
                       <CardContent className="pb-0 overflow-auto">
                         <Table>
                           <TableHeader>
                             <TableRow>
                               <TableHead className="cursor-pointer">
-                                <Button
-                                  variant={"ghost"}
-                                  className="w-full p-0 flex justify-start items-center gap-x-2"
-                                  onClick={() => handleSort("name")}
-                                >
+                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("name")}>
                                   Nome
                                   <CaretSortIcon />
                                 </Button>
                               </TableHead>
                               <TableHead className="cursor-pointer">
-                                <Button
-                                  variant={"ghost"}
-                                  className="w-full p-0 flex justify-start items-center gap-x-2"
-                                  onClick={toggleActiveFilter}
-                                >
+                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={handleActiveFilter}>
                                   Estado
                                   <CaretSortIcon />
                                 </Button>
                               </TableHead>
                               <TableHead className="hidden md:table-cell cursor-pointer">
-                                <Button
-                                  variant={"ghost"}
-                                  className="w-full p-0 flex justify-start items-center gap-x-2"
-                                  onClick={() => handleSort("total_in_stock")}
-                                >
+                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("total_in_stock")}>
                                   Total em Estoque
                                   <CaretSortIcon />
                                 </Button>
                               </TableHead>
                               <TableHead className="hidden md:table-cell cursor-pointer">
-                                <Button
-                                  variant={"ghost"}
-                                  className="w-full p-0 flex justify-start items-center gap-x-2"
-                                  onClick={() => handleSort("total_revenue")}
-                                >
+                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("total_revenue")}>
                                   Total de Vendas
                                   <CaretSortIcon />
                                 </Button>
                               </TableHead>
                               <TableHead className="hidden md:table-cell cursor-pointer">
-                                <Button
-                                  variant={"ghost"}
-                                  className="w-full p-0 flex justify-start items-center gap-x-2"
-                                  onClick={() => handleSort("created_at")}
-                                >
+                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("created_at")}>
                                   Criado em
                                   <CaretSortIcon />
                                 </Button>
@@ -265,7 +248,12 @@ function Products() {
                       </CardFooter>
                     </Card>
                   ) : (
-                    <div className="h-[500px] grid place-content-center">Nenhum produto encontrado</div>
+                    <CardContent className="h-full">
+                      <div className="h-full w-full flex flex-col items-center justify-center">
+                        <LucideShoppingCart size={40} className="text-muted-foreground mb-4" />
+                        <h2 className="text-2xl font-bold text-muted-foreground">Nenhum produto encontrado</h2>
+                      </div>
+                    </CardContent>
                   )}
                 </Card>
               </div>
