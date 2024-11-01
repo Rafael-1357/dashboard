@@ -227,20 +227,21 @@ function Products() {
                           <Pagination className="h-auto flex justify-end">
                             <PaginationContent>
                               <PaginationItem>
-                                <PaginationPrevious onClick={() => handlePageChange(currentPage - 1)} />
+                                <PaginationPrevious className="cursor-pointer" onClick={() => handlePageChange(currentPage - 1)} />
                               </PaginationItem>
                               {getPageNumbers().map((page) => (
                                 <PaginationItem key={page}>
                                   <PaginationLink
                                     isActive={page === currentPage}
                                     onClick={() => handlePageChange(page)}
+                                    className="cursor-pointer"
                                   >
                                     {page}
                                   </PaginationLink>
                                 </PaginationItem>
                               ))}
                               <PaginationItem>
-                                <PaginationNext onClick={() => handlePageChange(currentPage + 1)} />
+                                <PaginationNext className="cursor-pointer" onClick={() => handlePageChange(currentPage + 1)} />
                               </PaginationItem>
                             </PaginationContent>
                           </Pagination>
