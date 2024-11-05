@@ -1,5 +1,8 @@
+import { useState } from "react"
 import { format, parseISO } from "date-fns"
 import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/ui/badge"
+import { MoreHorizontal } from "lucide-react"
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -7,13 +10,21 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Badge } from "@/components/ui/badge"
-import { MoreHorizontal } from "lucide-react"
 import {
   TableCell,
   TableRow,
 } from "@/components/ui/table"
-
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog"
 
 type ProductTableRowProps = {
   product: {
@@ -31,6 +42,15 @@ type ProductTableRowProps = {
 };
 
 function ProductTableRow({ product }: ProductTableRowProps) {
+
+  const deleteProduct = () => {
+    fetch(`${import.meta.env.VITE_API_URL}/api/products/${product.id}`,{
+      method: "DELETE",
+      headers:{
+        authorization: import.meta.env.VITE_API_TOKEN
+      }
+    })
+  }
 
   return (
     <>
@@ -72,11 +92,28 @@ function ProductTableRow({ product }: ProductTableRowProps) {
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
               <DropdownMenuItem className="cursor-pointer">Editar</DropdownMenuItem>
-              <DropdownMenuItem className="cursor-pointer">Deletar</DropdownMenuItem>
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button role="menuitem" className="w-full text-sm text-left font-normal px-2 py-1.5 border-0 justify-start shadow-none outline-none" variant="outline">Deletar</Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Deletando produto</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Deseja deletar o produto {product.name} de forma permantente de sua lista de produtos?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                    <AlertDialogAction onClick={deleteProduct}>Deletar</AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </DropdownMenuContent>
           </DropdownMenu>
         </TableCell>
       </TableRow>
+
     </>
   )
 }

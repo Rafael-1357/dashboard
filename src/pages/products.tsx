@@ -158,12 +158,12 @@ function Products() {
                       Adicionar novo produto
                     </Button>
                   </SheetTrigger>
-                  <SheetContent>
+                  <SheetContent className="overflow-auto">
                     <SheetHeader>
                       <SheetTitle className="pb-4">Novo produto</SheetTitle>
                       <Separator />
                     </SheetHeader>
-                    <CreateProduct />
+                    <CreateProduct/>
                   </SheetContent>
                 </Sheet>
               </div>
