@@ -131,8 +131,8 @@ function Products() {
       .then((response) => {
         setProducts(response.data);
         setMeta(response.meta);
-      }).catch(err => {
-
+      }).catch((err) => {
+        console.log(err)
         setProducts([])
       });
   };
