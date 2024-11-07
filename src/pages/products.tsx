@@ -50,7 +50,6 @@ type Product = {
   };
 };
 
-
 function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [meta, setMeta] = useState<any>(null);
@@ -158,7 +157,7 @@ function Products() {
                       Adicionar novo produto
                     </Button>
                   </SheetTrigger>
-                  <SheetContent className="overflow-auto">
+                  <SheetContent className="min-w-[500px] overflow-auto">
                     <SheetHeader>
                       <SheetTitle className="pb-4">Novo produto</SheetTitle>
                       <Separator />
