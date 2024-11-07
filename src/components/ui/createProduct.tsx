@@ -140,6 +140,7 @@ function CreateProduct() {
             title: "Produto adicionado",
             description: "Disponível na lista de produtos",
           });
+          form.reset();
         } else {
           toast({
             variant: "destructive",
