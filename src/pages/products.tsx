@@ -15,6 +15,7 @@ import {
 import {
   Table,
   TableBody,
+  TableCell,
   TableHead,
   TableHeader,
   TableRow,
@@ -63,34 +64,6 @@ function Products() {
   const [activeFilter, setActiveFilter] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    fetchProducts();
-  }, [currentPage, sortOptions, activeFilter, searchTerm]);
-
-  const fetchProducts = () => {
-    const baseUrl = `${import.meta.env.VITE_API_URL}/api/products?page=${currentPage}`;
-    const sortParam = sortOptions.field
-      ? `&sort[0]=${sortOptions.field}${sortOptions.direction === "desc" ? ":desc" : ""}`
-      : "";
-    const activeParam = activeFilter !== null ? `&filters[active][$eq]=${activeFilter}` : "";
-    const searchParam = searchTerm ? `&filters[name][$startsWith]=${searchTerm}` : "";
-    const url = baseUrl + sortParam + activeParam + searchParam;
-
-    console.log(url);
-
-    fetch(url, {
-      headers: {
-        "Content-type": "application/json",
-        Authorization: import.meta.env.VITE_API_TOKEN,
-      },
-    })
-      .then((response) => response.json())
-      .then((response) => {
-        setProducts(response.data);
-        setMeta(response.meta);
-      });
-  };
-
   const handleSort = (field: string) => {
     setSortOptions((prevSort) => {
       if (prevSort.field === field) {
@@ -135,6 +108,35 @@ function Products() {
     return pages;
   };
 
+  useEffect(() => {
+    fetchProducts();
+  }, [currentPage, sortOptions, activeFilter, searchTerm]);
+
+  const fetchProducts = () => {
+    const baseUrl = `${import.meta.env.VITE_API_URL}/api/products?page=${currentPage}`;
+    const sortParam = sortOptions.field
+      ? `&sort[0]=${sortOptions.field}${sortOptions.direction === "desc" ? ":desc" : ""}`
+      : "";
+    const activeParam = activeFilter !== null ? `&filters[active][$eq]=${activeFilter}` : "";
+    const searchParam = searchTerm ? `&filters[name][$startsWith]=${searchTerm}` : "";
+    const url = baseUrl + sortParam + activeParam + searchParam;
+
+    fetch(url, {
+      headers: {
+        "Content-type": "application/json",
+        Authorization: import.meta.env.VITE_API_TOKEN,
+      },
+    })
+      .then((response) => response.json())
+      .then((response) => {
+        setProducts(response.data);
+        setMeta(response.meta);
+      }).catch(err => {
+
+        setProducts([])
+      });
+  };
+
   return (
     <>
       <div className="flex flex-col md:flex-row md:min-w-full">
@@ -162,99 +164,101 @@ function Products() {
                       <SheetTitle className="pb-4">Novo produto</SheetTitle>
                       <Separator />
                     </SheetHeader>
-                    <CreateProduct/>
+                    <CreateProduct />
                   </SheetContent>
                 </Sheet>
               </div>
               <div className="h-[90%]">
                 <Card className="h-full overflow-auto">
-                  {products.length !== 0 ? (
-                    <Card className="h-full overflow-auto border-0 grid grid-rows-[25px_1fr_60px]">
-                      <CardHeader>
-                      </CardHeader>
-                      <CardContent className="pb-0 overflow-auto">
-                        <Table>
-                          <TableHeader>
-                            <TableRow>
-                              <TableHead className="cursor-pointer">
-                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("name")}>
-                                  Nome
-                                  <CaretSortIcon />
-                                </Button>
-                              </TableHead>
-                              <TableHead className="cursor-pointer">
-                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={handleActiveFilter}>
-                                  Estado
-                                  <CaretSortIcon />
-                                </Button>
-                              </TableHead>
-                              <TableHead className="hidden md:table-cell cursor-pointer">
-                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("total_in_stock")}>
-                                  Total em Estoque
-                                  <CaretSortIcon />
-                                </Button>
-                              </TableHead>
-                              <TableHead className="hidden md:table-cell cursor-pointer">
-                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("total_revenue")}>
-                                  Total de Vendas
-                                  <CaretSortIcon />
-                                </Button>
-                              </TableHead>
-                              <TableHead className="hidden md:table-cell cursor-pointer">
-                                <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("created_at")}>
-                                  Criado em
-                                  <CaretSortIcon />
-                                </Button>
-                              </TableHead>
-                              <TableHead>
-                                <span className="sr-only">Ações</span>
-                              </TableHead>
-                            </TableRow>
-                          </TableHeader>
-                          <TableBody>
-                            {products.map((product) => (
+                  <Card className="h-full overflow-auto border-0 grid grid-rows-[25px_1fr_60px]">
+                    <CardHeader>
+                    </CardHeader>
+                    <CardContent className="pb-0 overflow-auto">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="cursor-pointer">
+                              <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("name")}>
+                                Nome
+                                <CaretSortIcon />
+                              </Button>
+                            </TableHead>
+                            <TableHead className="cursor-pointer">
+                              <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={handleActiveFilter}>
+                                Estado
+                                <CaretSortIcon />
+                              </Button>
+                            </TableHead>
+                            <TableHead className="hidden md:table-cell cursor-pointer">
+                              <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("total_in_stock")}>
+                                Total em Estoque
+                                <CaretSortIcon />
+                              </Button>
+                            </TableHead>
+                            <TableHead className="hidden md:table-cell cursor-pointer">
+                              <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("total_revenue")}>
+                                Total de Vendas
+                                <CaretSortIcon />
+                              </Button>
+                            </TableHead>
+                            <TableHead className="hidden md:table-cell cursor-pointer">
+                              <Button variant={"ghost"} className="w-full p-0 flex justify-start items-center gap-x-2" onClick={() => handleSort("created_at")}>
+                                Criado em
+                                <CaretSortIcon />
+                              </Button>
+                            </TableHead>
+                            <TableHead>
+                              <span className="sr-only">Ações</span>
+                            </TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {products.length !== 0 ? (
+                            products.map((product) => (
                               <ProductTableRow key={product.id} product={product} />
-                            ))}
-                          </TableBody>
-                        </Table>
-                      </CardContent>
-                      <CardFooter className="max-h-full">
-                        <div className="w-full flex">
-                          <div className="w-full text-xs text-muted-foreground">
-                            Mostrando <strong>{meta?.from}</strong> - <strong>{meta?.to}</strong> de <strong>{meta?.total}</strong> Produtos
-                          </div>
-                          <Pagination className="h-auto flex justify-end">
-                            <PaginationContent>
-                              <PaginationItem>
-                                <PaginationPrevious className="cursor-pointer" onClick={() => handlePageChange(currentPage - 1)} />
-                              </PaginationItem>
-                              {getPageNumbers().map((page) => (
-                                <PaginationItem key={page}>
-                                  <PaginationLink
-                                    isActive={page === currentPage}
-                                    onClick={() => handlePageChange(page)}
-                                    className="cursor-pointer"
-                                  >
-                                    {page}
-                                  </PaginationLink>
-                                </PaginationItem>
-                              ))}
-                              <PaginationItem>
-                                <PaginationNext className="cursor-pointer" onClick={() => handlePageChange(currentPage + 1)} />
-                              </PaginationItem>
-                            </PaginationContent>
-                          </Pagination>
-                        </div>
-                      </CardFooter>
-                    </Card>
-                  ) : (
-                    <CardContent className="h-full">
-                      <div className="h-full w-full flex flex-col items-center justify-center">
-                        <LucideShoppingCart size={40} className="text-muted-foreground mb-4" />
-                        <h2 className="text-2xl font-bold text-muted-foreground">Nenhum produto encontrado</h2>
-                      </div>
+                            ))
+                          ) : (
+                            <TableRow className="h-[300px]">
+                              <TableCell colSpan={5}>
+                                <div className="flex flex-col items-center justify-center col">
+                                  <LucideShoppingCart size={40} className="text-muted-foreground mb-4" />
+                                  <h2 className="text-2xl font-bold text-muted-foreground">Nenhum produto encontrado</h2>
+                                </div>
+                              </TableCell>
+                            </TableRow>
+                          )}
+                        </TableBody>
+                      </Table>
                     </CardContent>
-                  )}
+                    <CardFooter className="max-h-full">
+                      <div className="w-full flex">
+                        <div className="w-full text-xs text-muted-foreground">
+                          Mostrando <strong>{meta?.from}</strong> - <strong>{meta?.to}</strong> de <strong>{meta?.total}</strong> Produtos
+                        </div>
+                        <Pagination className="h-auto flex justify-end">
+                          <PaginationContent>
+                            <PaginationItem>
+                              <PaginationPrevious className="cursor-pointer" onClick={() => handlePageChange(currentPage - 1)} />
+                            </PaginationItem>
+                            {getPageNumbers().map((page) => (
+                              <PaginationItem key={page}>
+                                <PaginationLink
+                                  isActive={page === currentPage}
+                                  onClick={() => handlePageChange(page)}
+                                  className="cursor-pointer"
+                                >
+                                  {page}
+                                </PaginationLink>
+                              </PaginationItem>
+                            ))}
+                            <PaginationItem>
+                              <PaginationNext className="cursor-pointer" onClick={() => handlePageChange(currentPage + 1)} />
+                            </PaginationItem>
+                          </PaginationContent>
+                        </Pagination>
+                      </div>
+                    </CardFooter>
+                  </Card>
                 </Card>
               </div>
             </main>
