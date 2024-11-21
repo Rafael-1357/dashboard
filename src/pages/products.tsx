@@ -37,24 +37,13 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-
-type Product = {
-  id: string;
-  active: string;
-  name: string;
-  category: string;
-  created_at: string;
-  total_revenue: number;
-  total_in_stock: {
-    value: number;
-    unit_name: string;
-  };
-};
+import { ProductList } from "@/types/products.types";
 
 function Products() {
-  const [products, setProducts] = useState<Product[]>([]);
+  const [products, setProducts] = useState<ProductList[]>([]);
   const [meta, setMeta] = useState<any>(null);
   const [currentPage, setCurrentPage] = useState(1);
+
 
   const [sortOptions, setSortOptions] = useState<{ field: string | null; direction: "asc" | "desc" | null }>({
     field: null,
