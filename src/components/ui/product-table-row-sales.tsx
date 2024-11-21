@@ -1,10 +1,7 @@
-import { Minus, Plus } from "lucide-react"
-import {
-  TableCell,
-  TableRow,
-} from "@/components/ui/table"
-import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
+import { Minus, Plus } from "lucide-react"
+import { TableCell, TableRow } from "@/components/ui/table"
+import { Input } from "@/components/ui/input";
 
 type Product = {
   id: number;

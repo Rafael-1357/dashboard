@@ -1,7 +1,27 @@
 import { useEffect, useRef, useState } from "react";
+import localForage from "localforage"
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search } from "lucide-react";
+
+type BodyFields = {
+  name: string,
+  active: string,
+  category: string,
+  measurement_unit: string,
+  stock_threshold: number,
+  expiration_day_limit: string,
+  measurement_models: MeasurementModel[]
+}
+
+type MeasurementModel = {
+  name: string,
+  active: string,
+  is_default: string,
+  quantitative: number,
+  sale_price: number,
+  cost_price: number,
+}
 
 function SearchProductsSales() {
   const [searchValue, setSearchValue] = useState('');
@@ -15,14 +35,23 @@ function SearchProductsSales() {
   };
 
   const handleProductChoice = (id: string) => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/products/details/${id}/id`,{
+    fetch(`${import.meta.env.VITE_API_URL}/api/products/details/${id}/id`, {
       headers: {
         "Content-type": "application/json",
         Authorization: import.meta.env.VITE_API_TOKEN,
       },
     })
       .then(response => response.json())
-      .then(response => console.log(response))
+      .then(product => {
+      localForage.getItem<BodyFields[]>("listProductsSales")
+        .then(response => {
+          const products = response || [];
+          localForage.setItem("listProductsSales", [...products, product]);
+        })
+        .catch(err => {
+          console.error("Erro ao verificar a chave:", err);
+        });
+    });
   }
 
   useEffect(() => {

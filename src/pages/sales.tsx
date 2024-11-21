@@ -1,34 +1,42 @@
+import { useEffect, useState } from "react"
+import localForage from "localforage"
 import NavMobile from "@/components/ui/nav-mobile"
 import NavDesktop from "@/components/ui/nav-desktop"
+import SearchProductsSales from "@/components/ui/searchProductsSales"
+import ProductTableRowSales from "@/components/ui/product-table-row-sales"
 import { Search, Triangle } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { useEffect, useState } from "react"
-import ProductTableRowSales from "@/components/ui/product-table-row-sales"
 import { Button } from "@/components/ui/button"
-import SearchProductsSales from "@/components/ui/searchProductsSales"
 
-type Product = {
-  id: number;
-  name: string;
-  value: number;
-};
 
 function Sales() {
 
-  const [products, setProducts] = useState<Product[]>([]);
   const [total, setTotal] = useState(0)
 
-  const handleRemoveProduct = (productId: number) => {
-    setProducts(products.filter(product => product.id !== productId));
-  };
+  useEffect(() => {
+    localForage.getItem("listProductsSales").then((value) => {
+      if (value === null) {
+        // Chave não existe, cria e define um valor inicial (por exemplo, um array vazio)
+        localForage.setItem("listProductsSales", []).then(() => {
+          console.log("Chave 'listProductsSales' criada com valor inicial.");
+        }).catch((err) => {
+          console.error("Erro ao criar a chave:", err);
+        });
+      } else {
+        // Chave existe, imprime o valor
+        console.log("Valor da chave 'listProductsSales':", value);
+      }
+    }).catch((err) => {
+      console.error("Erro ao verificar a chave:", err);
+    });
+  }, []);
+
+  // const handleRemoveProduct = (productId: number) => {
+  //   setProducts(products.filter(product => product.id !== productId));
+  // };
 
   const calculateTotalValue = (qtd: number, productID: number) => {
-    products.map(product => {
-      if (product.id == productID) {
-
-      }
-    })
   }
 
   return (
@@ -51,7 +59,7 @@ function Sales() {
                         <TableHead><div className="flex items-center gap-x-2"> Valor total </div></TableHead>
                       </TableRow>
                     </TableHeader>
-                    <TableBody>
+                    {/* <TableBody>
                       {
                         products.length != 0
                           ?
@@ -70,7 +78,7 @@ function Sales() {
                           </TableCell>
                       }
 
-                    </TableBody>
+                    </TableBody> */}
                   </Table>
                 </CardContent>
               </Card>

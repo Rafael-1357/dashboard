@@ -22,35 +22,26 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { FieldsProductsCreate, MeasurementModel } from "@/types/products.types";
 
-type BodyFields = {
-  name: string,
-  active: string,
-  category: string,
-  measurement_unit: string,
-  stock_threshold: number,
-  expiration_day_limit: string,
-  measurement_models: MeasurementModel[]
-}
-
-type MeasurementModel = {
-  name: string,
-  active: string,
-  is_default: string,
-  quantitative: number,
-  sale_price: number,
-  cost_price: number,
-}
 
 const productCreateSch = z.object({
-  name: z.string().min(2, { message: "Insira pelo menos 2 caracteres" }).max(24, { message: "Insira menos de 24 caracteres" }),
-  status: z.enum(["active", "disabled"], { message: "Selecione um estado" }),
-  category: z.string().min(2, { message: "Insira pelo menos 2 caracteres" }).max(24, { message: "Insira menos de 24 caracteres" }),
-  measurement_unit: z.string().min(1, { message: "Insira no mínimo um caractere" }).max(24, { message: "Insira menos de 24 caracteres" }),
-  stock_threshold: z.preprocess((val) => parseFloat(val as string), z.number().nonnegative({ message: "Preço de venda deve ser um número não-negativo" })),
+  name: z.string()
+    .min(2, { message: "Insira pelo menos 2 caracteres" })
+    .max(24, { message: "Insira menos de 24 caracteres" }),
+  status: z.enum(["active", "disabled"],
+    { message: "Selecione um estado" }),
+  category: z.string()
+    .min(2, { message: "Insira pelo menos 2 caracteres" })
+    .max(24, { message: "Insira menos de 24 caracteres" }),
+  measurement_unit: z.string()
+    .min(1, { message: "Insira no mínimo um caractere" })
+    .max(24, { message: "Insira menos de 24 caracteres" }),
+  stock_threshold: z.preprocess((val) => parseFloat(val as string),
+    z.number()
+      .nonnegative({ message: "Preço de venda deve ser um número não-negativo" })),
   expiration_day_limit: z.string(),
-  expiration_date: z
-    .string()
+  expiration_date: z.string()
     .refine((val) => new Date(val) > new Date(), {
       message: "Data de validade deve ser futura",
     })
@@ -58,12 +49,23 @@ const productCreateSch = z.object({
   measure_models: z
     .array(
       z.object({
-        name: z.string().min(1, { message: "Insira no mínimo um caractere" }).max(24, { message: "Insira menos de 24 caracteres" }),
+        name: z.string()
+          .min(1, { message: "Insira no mínimo um caractere" })
+          .max(24, { message: "Insira menos de 24 caracteres" }),
         active: z.boolean(),
         is_default: z.boolean(),
-        quantitative: z.preprocess((val) => parseInt(val as string), z.number().nonnegative({ message: "Quantidade deve ser um número não-negativo" })),
-        sale_price: z.preprocess((val) => parseFloat(val as string), z.number().nonnegative({ message: "Preço de venda deve ser um número não-negativo" })),
-        cost_price: z.preprocess((val) => parseFloat(val as string), z.number().nonnegative({ message: "Preço de custo deve ser um número não-negativo" })),
+        quantitative:
+          z.preprocess((val) => parseInt(val as string),
+            z.number().nonnegative({ message: "Quantidade deve ser um número não-negativo" })),
+        sale_price:
+          z.preprocess((val) => (isNaN(parseFloat(val as string)) ? 0 : parseFloat(val as string)),
+            z.number()
+              .nonnegative({ message: "Preço de venda deve ser um número não-negativo" })
+              .min(1, "O valor deve ser no mínimo 1")),
+        cost_price: z.preprocess((val) => (isNaN(parseFloat(val as string)) ? 0 : parseFloat(val as string)),
+          z.number()
+            .nonnegative({ message: "Preço de custo deve ser um número não-negativo" })
+            .min(1, "O valor deve ser no mínimo 1")),
       })
     )
     .min(1, "Ao menos um modelo de medida é obrigatório"),
@@ -115,7 +117,7 @@ function CreateProduct() {
       }
     });
 
-    const body: BodyFields = {
+    const body: FieldsProductsCreate = {
       name: values.name,
       active: values.status === 'active' ? "1" : "0",
       category: values.category,
@@ -158,7 +160,6 @@ function CreateProduct() {
         });
       });
   }
-
 
   return (
     <div className="overflow-auto">
