@@ -61,7 +61,7 @@ function ProductTableRow({ product }: ProductTableRowProps) {
           <Badge variant="outline">{product.active ? 'Ativo' : 'Desativado'}</Badge>
         </TableCell>
         <TableCell className="hidden md:table-cell">
-          {product.total_in_stock.value}
+          {product.total_in_stock.value} {product.total_in_stock.unit_name}
         </TableCell>
         <TableCell className="hidden md:table-cell">
           {
