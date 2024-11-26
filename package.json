@@ -27,7 +27,6 @@
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",
     "date-fns": "^3.6.0",
-    "dotenv": "^16.4.5",
     "localforage": "1.10.0",
     "lucide-react": "^0.429.0",
     "react": "^18.3.1",
@@ -37,7 +36,8 @@
     "react-router-dom": "^6.26.1",
     "tailwind-merge": "^2.5.2",
     "tailwindcss-animate": "^1.0.7",
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "zustand": "^5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.9.0",
