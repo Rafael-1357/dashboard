@@ -1,3 +1,8 @@
+export type TableHeaders = {
+  title: string;
+  Action: Function,
+}
+
 export type ProductList = {
   id: string;
   active: string;
@@ -10,6 +15,33 @@ export type ProductList = {
     unit_name: string;
   };
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 export type FieldsProductsCreate = {
   name: string,
