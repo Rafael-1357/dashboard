@@ -1,21 +1,36 @@
 export type TableHeaders = {
-  title: string;
+  title: string,
   Action: Function,
 }
 
 export type ProductList = {
-  id: string;
-  active: string;
-  name: string;
-  category: string;
-  created_at: string;
-  total_revenue: number;
+  id: string,
+  active: string,
+  name: string,
+  category: string,
+  created_at: string,
+  total_revenue: number,
   total_in_stock: {
-    value: number;
-    unit_name: string;
-  };
+    value: number,
+    unit_name: string,
+  },
 };
 
+export type PaginationMeta = {
+  current_page: number;
+  from: number;
+  last_page: number;
+  per_page: number;
+  to: number;
+  total: number;
+  links: Link[];
+};
+
+export type Link = {
+  url: string | null;
+  label: string;
+  active: boolean;
+};
 
 
 
