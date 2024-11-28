@@ -3,17 +3,11 @@ import NavDesktop from "@/components/ui/nav-desktop";
 import NavMobile from "@/components/ui/nav-mobile";
 import ProductTableHeader from "@/components/page-components/product-table-header";
 import ProductTableBody from "@/components/page-components/product-table-body";
-import ProductTableRow from "@/components/page-components/product-table-row";
+import ProductTableFooter from "@/components/page-components/product-table-footer";
 import CreateProduct from "@/components/ui/createProduct";
-import { CirclePlus, LucideShoppingCart } from "lucide-react";
-import { CaretSortIcon } from "@radix-ui/react-icons";
+import { useProductStore } from "@/store/product";
+import { CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-} from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -24,14 +18,6 @@ import {
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -39,9 +25,15 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
-import { ProductList } from "@/types/products.types";
 
 function Products() {
+
+  const [searchTerm, setSearchTermInput] = useState("");
+  const { setSearchTerm } = useProductStore()
+
+  useEffect(() => {
+    setSearchTerm(searchTerm)
+  }, [searchTerm])
 
   return (
     <>
@@ -54,8 +46,8 @@ function Products() {
               <Input
                 placeholder="Filtrar produtos"
                 className="max-w-sm h-9 bg-white focus-visible:ring-0"
-              // value={searchTerm}
-              // onChange={(e) => setSearchTerm(e.target.value)}
+                value={searchTerm}
+                onChange={(e) => setSearchTermInput(e.target.value)}
               />
               <Sheet>
                 <SheetTrigger asChild>
@@ -85,7 +77,7 @@ function Products() {
                 </Table>
               </div>
               <Separator />
-              <div className="mt-1 px-2">Footer</div>
+              <ProductTableFooter />
             </div>
           </main>
         </div>
