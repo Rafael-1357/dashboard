@@ -19,13 +19,13 @@ function Sales() {
       if (value === null) {
         // Chave não existe, cria e define um valor inicial (por exemplo, um array vazio)
         localForage.setItem("listProductsSales", []).then(() => {
-          console.log("Chave 'listProductsSales' criada com valor inicial.");
+          // console.log("Chave 'listProductsSales' criada com valor inicial.");
         }).catch((err) => {
           console.error("Erro ao criar a chave:", err);
         });
       } else {
         // Chave existe, imprime o valor
-        console.log("Valor da chave 'listProductsSales':", value);
+        // console.log("Valor da chave 'listProductsSales':", value);
       }
     }).catch((err) => {
       console.error("Erro ao verificar a chave:", err);
