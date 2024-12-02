@@ -1,22 +1,16 @@
 import { useEffect, useState } from "react";
-import NavDesktop from "@/components/ui/nav-desktop";
-import NavMobile from "@/components/ui/nav-mobile";
+import NavDesktop from "@/components/page-components/nav-desktop";
+import NavMobile from "@/components/page-components/nav-mobile";
 import ProductTableHeader from "@/components/page-components/product-table-header";
 import ProductTableBody from "@/components/page-components/product-table-body";
 import ProductTableFooter from "@/components/page-components/product-table-footer";
-import CreateProduct from "@/components/ui/createProduct";
+import CreateProduct from "@/components/page-components/create-product";
 import { useProductStore } from "@/store/product";
 import { CirclePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -24,7 +18,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+
 
 function Products() {
 
@@ -49,24 +43,10 @@ function Products() {
                 value={searchTerm}
                 onChange={(e) => setSearchTermInput(e.target.value)}
               />
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button className="h-full bg-purple-500 cursor-pointer">
-                    <CirclePlus className="mr-1 flex" />
-                    Adicionar novo produto
-                  </Button>
-                </SheetTrigger>
-                <SheetContent className="min-w-[500px] overflow-auto">
-                  <SheetHeader>
-                    <SheetTitle className="pb-4">Novo produto</SheetTitle>
-                    <Separator />
-                  </SheetHeader>
-                  <CreateProduct />
-                </SheetContent>
-              </Sheet>
+              <CreateProduct />
             </div>
             <div className="max-h-[90%] p-4 border bg-white rounded-md flex flex-col shadow-sm">
-              <div className="mb-1 px-2">
+              <div className="mb-1 px-2 text-sm font-medium">
                 Produtos
               </div>
               <Separator />
