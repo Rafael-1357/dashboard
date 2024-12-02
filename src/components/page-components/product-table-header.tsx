@@ -1,40 +1,49 @@
+import { useProductStore } from "@/store/product";
 import { TableHeaders } from "@/types/products.types";
 import { Button } from "@/components/ui/button";
 import { TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 
 function ProductTableHeader() {
+  
+  const { setStateFilter, setSortOptions } = useProductStore()
 
   const handleSort = (field: string) => {
-    console.log(field)
+    setSortOptions(field)
   };
 
   const handleActiveFilter = () => {
-    console.log('Estado')
+    setStateFilter();
   };
 
   const tableHeaders: TableHeaders[] = [
     {
-      title: 'Nome',
+      label: "Nome",
+      title: 'name',
       Action: (field: string) => handleSort(field),
     },
     {
-      title: 'Estado',
+      label: "Estado",
+      title: 'state',
       Action: handleActiveFilter,
     },
     {
-      title: 'Total em Estoque',
+      label: "Total em estoque",
+      title: 'total_in_stock',
       Action: (field: string) => handleSort(field),
     },
     {
-      title: 'Total de Vendas',
+      label: "Total de vendas",
+      title: 'total_revenue',
       Action: (field: string) => handleSort(field),
     },
     {
-      title: 'Criado em',
+      label: "Criado em",
+      title: 'created_at',
       Action: (field: string) => handleSort(field),
     },
     {
+      label: "",
       title: '',
       Action: (field: string) => handleSort(field),
     },
@@ -45,7 +54,7 @@ function ProductTableHeader() {
       <TableHeader>
         <TableRow>
           {
-            tableHeaders.map(({ title, Action }) => (
+            tableHeaders.map(({ label, title, Action }) => (
               <TableHead
                 key={title}
                 className="cursor-pointer"
@@ -62,14 +71,14 @@ function ProductTableHeader() {
                   }}
                 >
                   {
-                    title != ''
+                    label != ''
                       ?
                       <>
-                        {title}
+                        {label}
                         < CaretSortIcon />
                       </>
                       :
-                      <span className="sr-only">{title}</span>
+                      <span className="sr-only">{label}</span>
                   }
                 </Button>
               </TableHead>

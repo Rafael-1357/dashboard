@@ -1,12 +1,12 @@
 import { TableBody, TableCell, TableRow } from "@/components/ui/table";
 import { useProductStore } from "@/store/product"
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import ProductTableRow from "@/components/page-components/product-table-row";
 import { LucideShoppingCart } from "lucide-react";
 
 function ProductTableBody() {
 
-  const { products,  requestProducts, meta } = useProductStore()
+  const { products,  requestProducts } = useProductStore()
 
   useEffect(() => {
     requestProducts();

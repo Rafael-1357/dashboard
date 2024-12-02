@@ -38,7 +38,7 @@ function ProductTableFooter() {
 
   return (
     <>
-      <div className="w-full flex">
+      <div className="w-full mt-4 flex items-center">
         <div className="w-full text-xs text-muted-foreground">
           Mostrando <strong>{meta.from}</strong> - <strong>{meta.to}</strong> de <strong>{meta.total}</strong> Produtos
         </div>

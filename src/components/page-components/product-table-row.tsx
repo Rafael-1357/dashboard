@@ -43,9 +43,9 @@ type ProductTableRowProps = {
 function ProductTableRow({ product }: ProductTableRowProps) {
 
   const deleteProduct = () => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/products/${product.id}`,{
+    fetch(`${import.meta.env.VITE_API_URL}/api/products/${product.id}`, {
       method: "DELETE",
-      headers:{
+      headers: {
         authorization: import.meta.env.VITE_API_TOKEN
       }
     })
@@ -93,7 +93,14 @@ function ProductTableRow({ product }: ProductTableRowProps) {
               <DropdownMenuItem className="cursor-pointer">Editar</DropdownMenuItem>
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button role="menuitem" className="w-full text-sm text-left font-normal px-2 py-1.5 border-0 justify-start shadow-none outline-none" variant="outline">Deletar</Button>
+                  <Button
+                    role="menuitem"
+                    className="w-full text-sm text-left font-normal px-2 py-1.5 border-0 justify-start shadow-none outline-none"
+                    variant="outline"
+                    disabled={product.total_in_stock.value > 0}
+                  >
+                    Deletar
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>
