@@ -1,8 +1,8 @@
   import { useEffect, useState } from "react";
-  import NavDesktop from "@/components/ui/nav-desktop";
-  import NavMobile from "@/components/ui/nav-mobile";
+  import NavDesktop from "@/components/page-components/nav-desktop";
+  import NavMobile from "@/components/page-components/nav-mobile";
   import ProductTableRow from "@/components/page-components/product-table-row";
-  import CreateProduct from "@/components/ui/createProduct";
+  import CreateProduct from "@/components/page-components/createProduct";
   import { CirclePlus, LucideShoppingCart } from "lucide-react";
   import { CaretSortIcon } from "@radix-ui/react-icons";
   import { Button } from "@/components/ui/button";
@@ -57,11 +57,14 @@
       setSortOptions((prevSort) => {
         if (prevSort.field === field) {
           const newDirection = prevSort.direction === "asc" ? "desc" : prevSort.direction === "desc" ? null : "asc";
-          return { field: newDirection ? field : null, direction: newDirection };
+          return {
+            field: newDirection ? field : null, direction: newDirection
+          };
         } else {
           return { field, direction: "asc" };
         }
       });
+      console.log(sortOptions)
     };
 
     const handleActiveFilter = () => {
@@ -109,6 +112,8 @@
       const activeParam = activeFilter !== null ? `&filters[active][$eq]=${activeFilter}` : "";
       const searchParam = searchTerm ? `&filters[name][$startsWith]=${searchTerm}` : "";
       const url = baseUrl + sortParam + activeParam + searchParam;
+
+      console.log(url)
 
       fetch(url, {
         headers: {

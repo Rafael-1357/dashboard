@@ -6,18 +6,9 @@ import ProductTableBody from "@/components/page-components/product-table-body";
 import ProductTableFooter from "@/components/page-components/product-table-footer";
 import CreateProduct from "@/components/page-components/create-product";
 import { useProductStore } from "@/store/product";
-import { CirclePlus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Table } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
 
 
 function Products() {

@@ -1,3 +1,4 @@
+import EditProductDialog from "@/components/page-components/edit-product-dialog"
 import { format, parseISO } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -90,7 +91,7 @@ function ProductTableRow({ product }: ProductTableRowProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem className="cursor-pointer">Editar</DropdownMenuItem>
+              <EditProductDialog />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button

@@ -1,4 +1,5 @@
 export type TableHeaders = {
+  label: string,
   title: string,
   Action: Function,
 }
@@ -32,46 +33,25 @@ export type Link = {
   active: boolean;
 };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+export type SortOptions = {
+  field: string | null;
+  direction: "asc" | "desc" | null
+}
 
 export type FieldsProductsCreate = {
   name: string,
-  active: string,
+  state: string,
   category: string,
   measurement_unit: string,
   stock_threshold: number,
-  expiration_day_limit: string,
+  expiration_day_limit: number,
   measurement_models: MeasurementModel[]
 }
 
 export type MeasurementModel = {
   name: string,
-  active: string,
-  is_default: string,
+  state: string,
+  is_default: boolean,
   quantitative: number,
   sale_price: number,
   cost_price: number,
