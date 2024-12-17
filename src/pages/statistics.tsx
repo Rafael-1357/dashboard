@@ -1,5 +1,5 @@
-import NavMobile from "@/components/ui/nav-mobile"
-import NavDesktop from "@/components/ui/nav-desktop"
+import NavMobile from "@/components/page-components/nav-mobile"
+import NavDesktop from "@/components/page-components/nav-desktop"
 
 function Statistics() {
   return (

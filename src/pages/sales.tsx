@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import localForage from "localforage"
-import NavMobile from "@/components/ui/nav-mobile"
-import NavDesktop from "@/components/ui/nav-desktop"
+import NavMobile from "@/components/page-components/nav-mobile"
+import NavDesktop from "@/components/page-components/nav-desktop"
 import SearchProductsSales from "@/components/ui/searchProductsSales"
-import ProductTableRowSales from "@/components/ui/product-table-row-sales"
+import ProductTableRowSales from "@/components/page-components/product-table-row-sales"
 import { Search, Triangle } from "lucide-react"
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -19,13 +19,13 @@ function Sales() {
       if (value === null) {
         // Chave não existe, cria e define um valor inicial (por exemplo, um array vazio)
         localForage.setItem("listProductsSales", []).then(() => {
-          console.log("Chave 'listProductsSales' criada com valor inicial.");
+          // console.log("Chave 'listProductsSales' criada com valor inicial.");
         }).catch((err) => {
           console.error("Erro ao criar a chave:", err);
         });
       } else {
         // Chave existe, imprime o valor
-        console.log("Valor da chave 'listProductsSales':", value);
+        // console.log("Valor da chave 'listProductsSales':", value);
       }
     }).catch((err) => {
       console.error("Erro ao verificar a chave:", err);

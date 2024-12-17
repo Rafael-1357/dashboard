@@ -1,3 +1,4 @@
+import EditProductDialog from "@/components/page-components/edit-product-dialog"
 import { format, parseISO } from "date-fns"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -43,9 +44,9 @@ type ProductTableRowProps = {
 function ProductTableRow({ product }: ProductTableRowProps) {
 
   const deleteProduct = () => {
-    fetch(`${import.meta.env.VITE_API_URL}/api/products/${product.id}`,{
+    fetch(`${import.meta.env.VITE_API_URL}/api/products/${product.id}`, {
       method: "DELETE",
-      headers:{
+      headers: {
         authorization: import.meta.env.VITE_API_TOKEN
       }
     })
@@ -61,7 +62,7 @@ function ProductTableRow({ product }: ProductTableRowProps) {
           <Badge variant="outline">{product.active ? 'Ativo' : 'Desativado'}</Badge>
         </TableCell>
         <TableCell className="hidden md:table-cell">
-          {product.total_in_stock.value}
+          {product.total_in_stock.value} {product.total_in_stock.unit_name}
         </TableCell>
         <TableCell className="hidden md:table-cell">
           {
@@ -90,10 +91,17 @@ function ProductTableRow({ product }: ProductTableRowProps) {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuLabel>Ações</DropdownMenuLabel>
-              <DropdownMenuItem className="cursor-pointer">Editar</DropdownMenuItem>
+              <EditProductDialog />
               <AlertDialog>
                 <AlertDialogTrigger asChild>
-                  <Button role="menuitem" className="w-full text-sm text-left font-normal px-2 py-1.5 border-0 justify-start shadow-none outline-none" variant="outline">Deletar</Button>
+                  <Button
+                    role="menuitem"
+                    className="w-full text-sm text-left font-normal px-2 py-1.5 border-0 justify-start shadow-none outline-none"
+                    variant="outline"
+                    disabled={product.total_in_stock.value > 0}
+                  >
+                    Deletar
+                  </Button>
                 </AlertDialogTrigger>
                 <AlertDialogContent>
                   <AlertDialogHeader>

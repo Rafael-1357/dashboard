@@ -6,15 +6,20 @@ import {
 	Package,
 	ShoppingCart,
 } from "lucide-react"
+import { Separator } from "@/components/ui/separator"
 
 function NavDesktop() {
 
 	return (
 		<>
 			<div className="hidden min-h-screen border-r md:block md:min-w-[220px] lg:min-w-[280px]">
-				<div className="flex justify-center h-full max-h-screen flex-col gap-2">
+				<div className="flex h-full max-h-screen flex-col gap-2">
 					{/* <div className="flex h-[60px] items-center border-b px-4 lg:h-[60px] lg:px-6"></div> */}
-					<div className="">
+					<div>
+						<div className="flex flex-col items-center">
+							<h1 className="text-4xl font-bold font-mono my-4">CODIGIN</h1>
+							<Separator className="w-11/12 text-center mb-4"/>
+						</div>
 						<nav className="grid items-start px-2 text-sm font-medium lg:px-4">
 							<NavLink
 								to="/"
