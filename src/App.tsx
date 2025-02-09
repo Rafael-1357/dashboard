@@ -1,15 +1,16 @@
-import './App.css'
-import { Button } from "@/components/ui/button"
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import Login from "./pages/Login";
 
 
 function App() {
 
   return (
-    <>
-      <div>
-        <Button>Click me</Button>
-      </div>
-    </>
+    <BrowserRouter> 
+      <Routes>
+        <Route path="/" element={Login()} />
+        <Route path="/about" element={<h1>About</h1>} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
