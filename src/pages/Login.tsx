@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -18,7 +19,7 @@ import localforage from "localforage";
 
 
 function Login() {
-
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -53,6 +54,7 @@ function Login() {
         localforage.setItem('access_token', result.access_token)
           .then(() => {
             console.log('Token salvo com sucesso');
+            navigate('/home'); 
           })
           .catch((error) => {
             console.error('Erro ao salvar token:', error);
