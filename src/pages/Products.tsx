@@ -6,9 +6,19 @@ import {
   BreadcrumbLink,
   BreadcrumbList,
 } from "../components/ui/breadcrumb";
-import { SidebarTrigger } from "@/components/ui/sidebar"
+import { SidebarTrigger } from "@/components/ui/sidebar";
+import { useProductStore } from "@/store/product"
+import { useEffect } from "react";
+import ProductTable from "@/components/productsTable";
 
-function Home() {
+function Products() {
+
+  const { requestProducts } = useProductStore();
+
+  useEffect(() => {
+    requestProducts(null);
+  }, []);
+
   return (
     <Layout>
       <header className="flex h-16 shrink-0 items-center gap-2">
@@ -19,7 +29,7 @@ function Home() {
             <BreadcrumbList>
               <BreadcrumbItem className="hidden md:block">
                 <BreadcrumbLink href="#">
-                  Home
+                  Produtos
                 </BreadcrumbLink>
               </BreadcrumbItem>
             </BreadcrumbList>
@@ -27,11 +37,10 @@ function Home() {
         </div>
       </header>
       <div className="p-4">
-        <h1 className="text-2xl font-bold">Home</h1>
-        <p>Bem vindo a página inicial</p>
+        <ProductTable />
       </div>
     </Layout>
   )
 }
 
-export default Home
+export default Products

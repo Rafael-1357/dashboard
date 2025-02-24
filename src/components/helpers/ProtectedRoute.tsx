@@ -3,16 +3,16 @@ import { Outlet, useNavigate } from 'react-router-dom';
 import localforage from 'localforage';
 
 function ProtectedRoute() {
-  const [isLoading, setIsLoading] = useState(true); // Estado para controlar o carregamento
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
     const checkToken = async () => {
-      const token = await localforage.getItem('access_token'); // Verifica se o token existe
+      const token = await localforage.getItem('access_token');
       if (!token) {
-        navigate('/'); // Redireciona para o login se o token não existir
+        navigate('/');
       } else {
-        setIsLoading(false); // Permite o acesso à rota
+        setIsLoading(false);
       }
     };
 
@@ -20,10 +20,10 @@ function ProtectedRoute() {
   }, [navigate]);
 
   if (isLoading) {
-    return <div>Carregando...</div>; // Exibe um loading enquanto verifica o token
+    return <div>Carregando...</div>;
   }
 
-  return <Outlet />; // Renderiza o componente da rota protegida
+  return <Outlet />;
 }
 
 export default ProtectedRoute;

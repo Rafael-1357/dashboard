@@ -13,7 +13,7 @@ import loginSchema from "@/schemas/loginSchema";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { LoaderCircle } from "lucide-react";
 import localforage from "localforage";
 
@@ -23,6 +23,16 @@ function Login() {
   const [isLoading, setIsLoading] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
+  useEffect(() => {
+    const checkToken = async () => {
+      const token = await localforage.getItem('access_token');
+      if (token) {
+        navigate('/home'); // Redireciona para /home se o token existir
+      }
+    };
+
+    checkToken();
+  }, [navigate]);
 
   const {
     register,
