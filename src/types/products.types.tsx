@@ -4,7 +4,7 @@ export type ProductList = {
   name: string,
   category: string,
   created_at: string, 
-  total_revenue: number,
+  currently_monthly_revenue: number,
   total_in_stock: {
     value: number,
     unit_name: string,
@@ -15,7 +15,7 @@ export type MetaLinks = {
   url: string | null,
   label: string,
   active: boolean
-}
+};
 
 export type ProductMeta = {
   current_page: number,
