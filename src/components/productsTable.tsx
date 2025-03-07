@@ -12,9 +12,10 @@ import { use, useEffect, useState } from "react";
 import { sortOptionType } from "@/schemas/productSchema";
 import { Input } from "./ui/input";
 import { Filter, Search } from "lucide-react";
+import { Separator } from "@radix-ui/react-separator";
 function ProductTable() {
 
-  const [sortOption, setSortOption] = useState<sortOptionType>({ label: '', direction: '' });
+  const [sortption, setSortOption] = useState<sortOptionType>({ label: '', direction: '' });
   const [search, setSearch] = useState<string>('');
 
   const { products, meta, setChangePage, setSortOptions, setStateProduct, clearFilters, setSearchFilter } = useProductStore();
@@ -138,18 +139,28 @@ function ProductTable() {
             ))}
           </TableBody>
         </Table>
-        <div className="mt-4">
+        <Separator className="border-t" orientation="horizontal" />
+        <div className="mt-4 mx-4">
+          <Pagination className="flex justify-between">
+            <div className="w-full text-muted-foreground flex items-center gap-1">
+              Exibindo <strong>{meta.from}</strong> - <strong>{meta.to}</strong> de <strong>{meta.total}</strong> Produtos
+            </div>
+            <div>
+              <PaginationContent className="text-muted-foreground">
 
-          <Pagination>
-            <PaginationContent>
-              {metaLinks.map(link => (
-                <PaginationItem className="cursor-pointer" key={link.label} onClick={() => handlePageChange(link.url, link.label)}>
-                  <PaginationLink isActive={link.active} size={link.label === "&laquo; Anterior" || link.label === "Próximo &raquo;" ? "lg" : "default"}>
-                    <span dangerouslySetInnerHTML={{ __html: link.label }} />
-                  </PaginationLink>
-                </PaginationItem>
-              ))}
-            </PaginationContent>
+              </PaginationContent>
+              <PaginationContent className="text-muted-foreground">
+                {metaLinks.map(link => (
+                  link.label != "..." &&
+
+                  <PaginationItem className="cursor-pointer" key={link.label} onClick={() => handlePageChange(link.url, link.label)}>
+                    <PaginationLink isActive={link.active} size={link.label === "&laquo; Anterior" || link.label === "Próximo &raquo;" ? "lg" : "default"}>
+                      <span dangerouslySetInnerHTML={{ __html: link.label }} />
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+              </PaginationContent>
+            </div>
           </Pagination>
         </div>
       </div>
