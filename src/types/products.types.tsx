@@ -27,3 +27,17 @@ export type ProductMeta = {
   to: number,
   total: number
 };
+
+export type sortOptionType = {
+  label: string | null,
+  direction: string | null
+}
+
+export type FormProductCreate = {
+  name: string,
+  category: string,
+  absolute_unit: string,
+  stock_threshold: number,
+  expiration_day_limit: number
+};
+

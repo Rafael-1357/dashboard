@@ -42,16 +42,8 @@ const data = {
       icon: Package,
       items: [
         {
-          title: "Genesis",
-          url: "#",
-        },
-        {
-          title: "Explorer",
-          url: "#",
-        },
-        {
-          title: "Quantum",
-          url: "#",
+          title: "Criar produto",
+          url: "/produtos/criar",
         },
       ],
     },

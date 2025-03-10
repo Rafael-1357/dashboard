@@ -1,8 +1,6 @@
 import { create } from "zustand";
-import { ProductList, ProductMeta } from "@/types/products.types";
+import { FormProductCreate, ProductList, ProductMeta, sortOptionType } from "@/types/products.types";
 import localforage from "localforage";
-import { sortOptionType } from "@/schemas/productSchema";
-import { stat } from "fs";
 
 type ProductStore = {
   products: ProductList[];
@@ -10,12 +8,13 @@ type ProductStore = {
   sortOptions: sortOptionType;
   stateProduct: number | null;
   searchFilter: string | null;
-  setSearchFilter: (search: string) => void;
-  requestProducts: (urlpage: string | null) => void;
-  setChangePage: (page: string | null) => void;
-  setSortOptions: (option: sortOptionType) => void;
+  setSearchFilter(search: string): void;
+  requestProducts(urlpage: string | null): void;
+  setChangePage(page: string | null): void;
+  setSortOptions(option: sortOptionType): void;
   setStateProduct(): void;
   clearFilters(): void;
+  createProduct(data: FormProductCreate): void;
 }
 
 export const useProductStore = create<ProductStore>((set, get) => ({
@@ -36,19 +35,19 @@ export const useProductStore = create<ProductStore>((set, get) => ({
   requestProducts: async (urlPage: string | null) => {
     const token = (await localforage.getItem<string>('access_token')) || '';
     const { sortOptions, stateProduct, searchFilter } = get()
-    
+
     const url = new URL(urlPage ?? `${import.meta.env.VITE_API_URL}/api/products`);
     url.searchParams.append('per_page', '10');
 
-    if(sortOptions.label != null) {
+    if (sortOptions.label != null) {
       url.searchParams.append("sort[0]", `${sortOptions.label}${sortOptions.direction}`);
     }
 
-    if(stateProduct != null) {
+    if (stateProduct != null) {
       url.searchParams.append("filters[active]", stateProduct.toString());
     }
 
-    if(searchFilter) {
+    if (searchFilter) {
       url.searchParams.append("filters[name][$startsWith]", searchFilter);
     }
 
@@ -112,5 +111,33 @@ export const useProductStore = create<ProductStore>((set, get) => ({
     });
 
     requestProducts(null);
+  },
+  createProduct: async (data: FormProductCreate) => {
+
+    const token = (await localforage.getItem<string>('access_token')) || '';
+    const url = `${import.meta.env.VITE_API_URL}/api/products`;
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data)
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch products");
+        return response.json();
+      })
+      .then((result) => {
+        set({
+          products: result.data,
+          meta: result.meta,
+        });
+        console.log(result.data)
+      })
+      .catch((error) => {
+        console.error("Error fetching products:", error);
+      });
   }
 }));

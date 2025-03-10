@@ -9,10 +9,11 @@ import { useProductStore } from "@/store/product";
 import { format, parseISO, set } from "date-fns"
 import { Button } from "./ui/button";
 import { use, useEffect, useState } from "react";
-import { sortOptionType } from "@/schemas/productSchema";
+import { sortOptionType } from "@/types/products.types";
 import { Input } from "./ui/input";
 import { Filter, Search } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
+
 function ProductTable() {
 
   const [sortption, setSortOption] = useState<sortOptionType>({ label: '', direction: '' });
@@ -123,6 +124,14 @@ function ProductTable() {
                   Total em vendas/mês
                 </Button>
               </TableHead>
+              <TableHead>
+                <Button
+                  variant={"ghost"}
+                  className="w-full justify-start p-0"
+                >
+                  Ações
+                </Button>
+              </TableHead>
             </TableRow>
 
           </TableHeader>
@@ -135,6 +144,7 @@ function ProductTable() {
                 <TableCell>{product.category}</TableCell>
                 <TableCell>{product.total_in_stock.value} {product.total_in_stock.unit_name}</TableCell>
                 <TableCell>R$ {product.currently_monthly_revenue}</TableCell>
+                <TableCell></TableCell>
               </TableRow>
             ))}
           </TableBody>
