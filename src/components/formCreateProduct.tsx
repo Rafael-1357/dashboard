@@ -3,22 +3,24 @@ import { Button } from "./ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card"
 import { Input } from "./ui/input"
 import { Label } from "./ui/label"
-import { LoaderCircle } from "lucide-react";
 import productSchema from "@/schemas/productSchema";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FormProductCreate } from "@/types/products.types";
-import { useStore } from "zustand";
-import { useProductStore } from "@/store/product";
+import localforage from "localforage";
+import { toast } from "sonner";
+import { CircleCheck, LoaderCircle, TriangleAlert } from "lucide-react";
+import { useState } from "react";
 
 function FormCreateProduct() {
 
-  const { createProduct } = useStore(useProductStore)
+  const [isLoading, setIsLoading] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors }
+    formState: { errors },
+    reset
   } = useForm<z.infer<typeof productSchema>>({
     resolver: zodResolver(productSchema),
     defaultValues: {
@@ -31,7 +33,32 @@ function FormCreateProduct() {
   });
 
   async function onSubmit(data: FormProductCreate) {
-    createProduct(data)
+    setIsLoading(true);
+    const token = (await localforage.getItem<string>('access_token')) || '';
+    const url = `${import.meta.env.VITE_API_URL}/api/products`;
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      body: JSON.stringify(data)
+    })
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch products");
+        return response.json();
+      })
+      .then(() => {
+        setIsLoading(false);
+        toast('Produto criado com sucesso', { icon: <CircleCheck />})
+        reset()
+      })
+      .catch((error) => {
+        setIsLoading(false);
+        console.error("Error fetching products:", error);
+        toast('Falha ao criar produto', { icon: <TriangleAlert /> })
+      });
   }
 
   return (
@@ -104,9 +131,9 @@ function FormCreateProduct() {
                 />
                 {errors.expiration_day_limit && (<span className="text-red-500">{errors.expiration_day_limit.message}</span>)}
               </div>
-              <Button type="submit" className="w-full">
-                Criar
-              </Button>
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? <LoaderCircle className="animate-spin" /> : "Entrar"}
+                </Button>
             </div>
           </form>
         </CardContent>

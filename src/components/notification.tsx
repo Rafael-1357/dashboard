@@ -7,43 +7,72 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import localforage from "localforage";
-import { Bell } from "lucide-react"
+import { Bell, CircleCheck, TriangleAlert } from "lucide-react"
 import { useEffect, useState } from "react"
 import { NotificationType } from "@/types/notification.types"
+import { toast } from "sonner";
 
+type MetaLinks = {
+  url: string | null,
+  label: string,
+  active: boolean
+};
+
+type NotificationMeta = {
+  current_page: number,
+  from: number,
+  last_page: number,
+  links: MetaLinks[],
+  path: string,
+  per_page: number,
+  to: number,
+  total: number
+};
 
 function Notification() {
 
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
+  const [metaNotifications, setMetaNotifications] = useState<NotificationMeta>({ current_page: 0, from: 0, last_page: 0, links: [], path: '', per_page: 0, to: 0, total: 0 });
 
   async function getToken() {
     return (await localforage.getItem<string>('access_token')) || '';
   }
 
-  useEffect(() => {
-    async function getNotifications() {
-      const token = await getToken();
+  async function getNotifications(page: string | null ) {
+    const token = await getToken();
 
-      fetch(import.meta.env.VITE_API_URL + '/api/notifications', {
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-      })
-        .then(response => response.json())
-        .then(data => {
-          setNotifications(data.data);
-        })
-        .catch(error => console.error('Error fetching notifications:', error));
+    let url = import.meta.env.VITE_API_URL + '/api/notifications';
+    if (page) {
+      url += `?page=${page}`;
     }
 
-    getNotifications();
+    fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+    })
+      .then(response => response.json())
+      .then(data => {
+        page ? setNotifications((prevNotifications) => {
+          const novasNotificacoes = data.data.filter(
+            (n: any) => !prevNotifications.some((prev) => prev.id === n.id)
+          );
+          return [...prevNotifications, ...novasNotificacoes];
+        }) : setNotifications(data.data);
+        setMetaNotifications(data.meta)
+      })
+      .catch(error => console.error('Error fetching notifications:', error));
+  }
+
+  useEffect(() => {
+    getNotifications(null);
   }, []);
 
   function markAsRead() {
     console.log('Notificações marcadas como lidas')
 
-    async function getNotifications() {
+    async function markAsReadNotifications() {
       const token = await getToken();
 
       fetch(import.meta.env.VITE_API_URL + '/api/notifications/mark-as-read', {
@@ -53,11 +82,26 @@ function Notification() {
           "Authorization": `Bearer ${token}`
         },
       })
-        .then(() => console.log('Notificações marcadas como lidas'))
-        .catch(error => console.error('Error fetching notifications:', error));
+        .then(() => {
+          toast('Notificações lidas com sucesso', { icon: <CircleCheck /> })
+          getNotifications(null);
+        })
+        .catch(error => {
+          console.error('Error fetching notifications:', error);
+          toast('Falha ao ler notificações', { icon: <TriangleAlert /> })
+        });
     }
 
-    getNotifications();
+    markAsReadNotifications();
+  }
+
+  function scrolling(e: HTMLElement) {
+    if (e.scrollHeight - e.scrollTop === e.clientHeight) {
+      console.log('Fim da rolagem');
+      if (metaNotifications?.current_page !== metaNotifications?.last_page) {
+        getNotifications((metaNotifications?.current_page + 1).toString());
+      }
+    }
   }
 
   const cssAppliedContent = (body: any) => `
@@ -81,7 +125,7 @@ function Notification() {
       <DropdownMenuTrigger >
         <Bell />
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="mx-4 pu">
+      <DropdownMenuContent className="mx-4">
         <div className="flex justify-between">
           <DropdownMenuLabel>Notificações</DropdownMenuLabel>
           <DropdownMenuLabel
@@ -91,7 +135,9 @@ function Notification() {
             Marcar como lida
           </DropdownMenuLabel>
         </div>
-        <div className="max-w-xs max-h-96 overflow-y-auto overflow-x-hidden">
+        <div className="max-w-xs max-h-96 overflow-y-auto overflow-x-hidden"
+          onScroll={(e) => scrolling(e.currentTarget)}
+        >
           {notifications.length > 0 ? notifications.map((notification) => (
             <div key={notification.id}>
               <DropdownMenuItem

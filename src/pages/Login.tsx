@@ -14,8 +14,9 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useEffect, useState } from "react";
-import { LoaderCircle } from "lucide-react";
+import { LoaderCircle, CircleCheck } from "lucide-react";
 import localforage from "localforage";
+import { toast } from "sonner"
 
 
 function Login() {
@@ -27,7 +28,7 @@ function Login() {
     const checkToken = async () => {
       const token = await localforage.getItem('access_token');
       if (token) {
-        navigate('/home'); // Redireciona para /home se o token existir
+        navigate('/home');
       }
     };
 
@@ -65,6 +66,7 @@ function Login() {
           .then(() => {
             console.log('Token salvo com sucesso');
             navigate('/home'); 
+            toast("Login efetuado com sucesso!", { icon: <CircleCheck /> });
           })
           .catch((error) => {
             console.error('Erro ao salvar token:', error);

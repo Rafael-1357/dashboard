@@ -8,11 +8,12 @@ import {
 import { useProductStore } from "@/store/product";
 import { format, parseISO, set } from "date-fns"
 import { Button } from "./ui/button";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { sortOptionType } from "@/types/products.types";
 import { Input } from "./ui/input";
 import { Filter, Search } from "lucide-react";
 import { Separator } from "@radix-ui/react-separator";
+import ProductsActions from "./helpers/productsActions";
 
 function ProductTable() {
 
@@ -144,7 +145,7 @@ function ProductTable() {
                 <TableCell>{product.category}</TableCell>
                 <TableCell>{product.total_in_stock.value} {product.total_in_stock.unit_name}</TableCell>
                 <TableCell>R$ {product.currently_monthly_revenue}</TableCell>
-                <TableCell></TableCell>
+                <TableCell className="p-0"><ProductsActions total_in_stock={product.total_in_stock.value}/></TableCell>
               </TableRow>
             ))}
           </TableBody>
@@ -157,7 +158,6 @@ function ProductTable() {
             </div>
             <div>
               <PaginationContent className="text-muted-foreground">
-
               </PaginationContent>
               <PaginationContent className="text-muted-foreground">
                 {metaLinks.map(link => (
