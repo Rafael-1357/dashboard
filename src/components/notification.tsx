@@ -7,7 +7,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import localforage from "localforage";
-import { Bell, CircleCheck, TriangleAlert } from "lucide-react"
+import { Bell, CircleCheck, Trash2Icon, TriangleAlert } from "lucide-react"
 import { useEffect, useState } from "react"
 import { NotificationType } from "@/types/notification.types"
 import { toast } from "sonner";
@@ -38,7 +38,7 @@ function Notification() {
     return (await localforage.getItem<string>('access_token')) || '';
   }
 
-  async function getNotifications(page: string | null ) {
+  async function getNotifications(page: string | null) {
     const token = await getToken();
 
     let url = import.meta.env.VITE_API_URL + '/api/notifications';
@@ -95,9 +95,31 @@ function Notification() {
     markAsReadNotifications();
   }
 
+  async function deleteNotifications(id: string) {
+
+    const token = await getToken();
+
+    async function deleteNotification(id: string) {
+      fetch(import.meta.env.VITE_API_URL + `/api/notifications/${id}`, {
+        method: 'DELETE',
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+      }).then(() => {
+        setNotifications((prevNotifications) => prevNotifications.filter((notification) => notification.id !== id));
+        toast('Notificação deletada com sucesso', { icon: <CircleCheck /> })
+      }).catch(error => {
+        console.error('Error fetching notifications:', error);
+        toast('Falha ao deletar notificação', { icon: <TriangleAlert /> })
+      });
+    }
+    
+    deleteNotification(id);
+  }
+
   function scrolling(e: HTMLElement) {
     if (e.scrollHeight - e.scrollTop === e.clientHeight) {
-      console.log('Fim da rolagem');
       if (metaNotifications?.current_page !== metaNotifications?.last_page) {
         getNotifications((metaNotifications?.current_page + 1).toString());
       }
@@ -122,7 +144,7 @@ function Notification() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger >
+      <DropdownMenuTrigger asChild>
         <Bell />
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mx-4">
@@ -142,9 +164,14 @@ function Notification() {
             <div key={notification.id}>
               <DropdownMenuItem
                 className="flex flex-col gap-1 items-start"
-                onClick={() => markAsRead()}
+                onSelect={(event) => {
+                  event.preventDefault();
+                }}
               >
-                {notification.read ? <p className="text-sm text-muted-foreground text-purple-500">lida</p> : <p className="text-sm text-muted-foreground">Não lida</p>}
+                <div className="flex justify-between w-full">
+                  {notification.read ? <p className="text-sm text-muted-foreground text-purple-500">lida</p> : <p className="text-sm text-muted-foreground">Não lida</p>}
+                  <button onClick={() => deleteNotifications(notification.id)}> <Trash2Icon /></button>
+                </div>
                 <div
                   id="notification"
                   className={'html'}
