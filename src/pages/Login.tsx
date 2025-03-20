@@ -17,6 +17,7 @@ import { useEffect, useState } from "react";
 import { LoaderCircle, CircleCheck } from "lucide-react";
 import localforage from "localforage";
 import { toast } from "sonner"
+import { logon } from "@/services/Auth";
 
 
 function Login() {
@@ -52,20 +53,14 @@ function Login() {
     setApiError(null);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await logon(data)
 
       if (response.ok) {
         const result = await response.json();
         localforage.setItem('access_token', result.access_token)
           .then(() => {
             console.log('Token salvo com sucesso');
-            navigate('/home'); 
+            navigate('/home');
             toast("Login efetuado com sucesso!", { icon: <CircleCheck /> });
           })
           .catch((error) => {
