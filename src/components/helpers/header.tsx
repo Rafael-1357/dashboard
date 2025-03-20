@@ -2,14 +2,13 @@ import { Separator } from "@/components/ui/separator";
 import {
   Breadcrumb,
   BreadcrumbItem,
-  BreadcrumbLink,
   BreadcrumbList,
-  BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { SidebarTrigger } from "@/components/ui/sidebar"
 import Notification from "@/components/notification";
 import { Fragment } from "react/jsx-runtime";
+import { Link } from "react-router-dom";
 
 type HeaderProps = {
   data: { label: string; href: string; }[];
@@ -28,9 +27,9 @@ function Header(props: HeaderProps) {
               {props.data.map((item, index) => (
                 <Fragment key={index}>
                   <BreadcrumbItem className={index === props.data.length - 1 ? "" : "hidden md:block"}>
-                    <BreadcrumbLink href={item.href}>
+                    <Link to={item.href}>
                       {item.label}
-                    </BreadcrumbLink>
+                    </Link>
                   </BreadcrumbItem>
                   {index < props.data.length - 1 && (
                     <BreadcrumbSeparator className="hidden md:block" />
