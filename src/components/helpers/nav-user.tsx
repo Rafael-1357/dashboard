@@ -1,12 +1,8 @@
 "use client"
 
 import {
-  BadgeCheck,
-  Bell,
   ChevronsUpDown,
-  CreditCard,
   LogOut,
-  Sparkles,
 } from "lucide-react"
 
 import {
@@ -17,7 +13,6 @@ import {
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuGroup,
   DropdownMenuItem,
   DropdownMenuLabel,
   DropdownMenuSeparator,
@@ -29,7 +24,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import localforage from "localforage"
+import { logout } from "@/services/Auth"
+import { useNavigate } from "react-router-dom"
 
 export function NavUser({
   user,
@@ -40,12 +36,8 @@ export function NavUser({
     avatar: string
   }
 }) {
+  const navigate = useNavigate();
   const { isMobile } = useSidebar()
-
-  const logOut = () => {
-    localforage.removeItem('access_token');
-    window.location.reload();
-  }
 
   return (
     <SidebarMenu>
@@ -86,7 +78,7 @@ export function NavUser({
               </div>
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="cursor-pointer" onClick={() => logOut()}>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => logout(navigate)}>
               <LogOut />
               Sair
             </DropdownMenuItem>
