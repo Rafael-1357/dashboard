@@ -1,4 +1,3 @@
-import Layout from "../components/helpers/layout";
 import Header from "@/components/helpers/header";
 
 function Home() {
@@ -8,13 +7,14 @@ function Home() {
   ]
 
   return (
-    <Layout>
+    <div>
+
       <Header data={data} />
       <div className="p-4">
         <h1 className="text-2xl font-bold">Home</h1>
         <p>Bem vindo a página inicial</p>
       </div>
-    </Layout>
+    </div>
   )
 }
 

@@ -11,7 +11,6 @@ import {
 
 import { NavMain } from "../helpers/nav-main"
 import { NavProjects } from "../helpers/nav-projects"
-import { NavSecondary } from "../helpers/nav-secondary"
 import { NavUser } from "./nav-user"
 import {
   Sidebar,

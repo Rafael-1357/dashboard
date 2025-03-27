@@ -1,4 +1,3 @@
-import Layout from "@/components/helpers/layout";
 import FormCreateProduct from "@/components/formCreateProduct";
 import Header from "@/components/helpers/header";
 
@@ -11,12 +10,12 @@ function CreateProduct() {
   ]
 
   return (
-    <Layout>
+    <div>
       <Header data={data} />
       <div className="p-4  h-full">
         <FormCreateProduct />
       </div>
-    </Layout>
+    </div>
   )
 }
 

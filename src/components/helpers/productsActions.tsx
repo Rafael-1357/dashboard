@@ -8,13 +8,15 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Ellipsis } from "lucide-react"
+import { Link } from "react-router-dom";
 
 
 interface ProductsActionsProps {
+  id: string;
   total_in_stock: number;
 }
 
-function ProductsActions({ total_in_stock }: ProductsActionsProps) {
+function ProductsActions({ id, total_in_stock }: ProductsActionsProps) {
 
   return (
     <DropdownMenu>
@@ -24,8 +26,10 @@ function ProductsActions({ total_in_stock }: ProductsActionsProps) {
       <DropdownMenuContent className="w-56">
         <DropdownMenuLabel>Ações</DropdownMenuLabel>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="cursor-pointer">
-          Editar
+        <DropdownMenuItem className="cursor-pointer" asChild>
+          <Link to={"/produtos/detalhes/" + id} >
+            Detalhes
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem className="cursor-pointer" disabled={total_in_stock > 0}>
           Deletar

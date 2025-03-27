@@ -1,19 +1,16 @@
-import { AppSidebar } from "@/components/helpers/app-sidebar"
+import { AppSidebar } from "@/components/helpers/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { Outlet } from "react-router-dom";
 
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar"
-
-function Layout({ children }: {children: React.ReactNode}) {
+function Layout() {
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        { children }
+        <Outlet />
       </SidebarInset>
     </SidebarProvider>
-  )
+  );
 }
 
-export default Layout
+export default Layout;

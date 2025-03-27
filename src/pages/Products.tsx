@@ -1,4 +1,3 @@
-import Layout from "../components/helpers/layout";
 import { useProductStore } from "@/store/product"
 import { useEffect } from "react";
 import ProductTable from "@/components/productsTable";
@@ -16,12 +15,12 @@ function Products() {
   }, []);
 
   return (
-    <Layout>
+    <div>
       <Header data={data} />
       <div className="p-4">
         <ProductTable />
       </div>
-    </Layout>
+    </div>
   )
 }
 

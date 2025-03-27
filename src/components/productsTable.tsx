@@ -145,7 +145,7 @@ function ProductTable() {
                 <TableCell>{product.category}</TableCell>
                 <TableCell>{product.total_in_stock.value} {product.total_in_stock.unit_name}</TableCell>
                 <TableCell>R$ {product.currently_monthly_revenue}</TableCell>
-                <TableCell className="p-0"><ProductsActions total_in_stock={product.total_in_stock.value}/></TableCell>
+                <TableCell className="p-0"><ProductsActions id={product.id} total_in_stock={product.total_in_stock.value}/></TableCell>
               </TableRow>
             ))}
           </TableBody>
