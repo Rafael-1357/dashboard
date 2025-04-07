@@ -1,58 +1,43 @@
-export type TableHeaders = {
-  label: string,
-  title: string,
-  Action: Function,
-}
-
 export type ProductList = {
   id: string,
   active: string,
   name: string,
   category: string,
-  created_at: string,
-  total_revenue: number,
+  created_at: string, 
+  currently_monthly_revenue: number,
   total_in_stock: {
     value: number,
     unit_name: string,
   },
 };
 
-export type PaginationMeta = {
-  current_page: number;
-  from: number;
-  last_page: number;
-  per_page: number;
-  to: number;
-  total: number;
-  links: Link[];
+export type MetaLinks = {
+  url: string | null,
+  label: string,
+  active: boolean
 };
 
-export type Link = {
-  url: string | null;
-  label: string;
-  active: boolean;
+export type ProductMeta = {
+  current_page: number,
+  from: number,
+  last_page: number,
+  links: MetaLinks[],
+  path: string,
+  per_page: number,
+  to: number,
+  total: number
 };
 
-export type SortOptions = {
-  field: string | null;
-  direction: "asc" | "desc" | null
+export type sortOptionType = {
+  label: string | null,
+  direction: string | null
 }
 
-export type FieldsProductsCreate = {
+export type FormProductCreate = {
   name: string,
-  state: string,
   category: string,
-  measurement_unit: string,
+  absolute_unit: string,
   stock_threshold: number,
-  expiration_day_limit: number,
-  measurement_models: MeasurementModel[]
-}
+  expiration_day_limit: number
+};
 
-export type MeasurementModel = {
-  name: string,
-  state: string,
-  is_default: boolean,
-  quantitative: number,
-  sale_price: number,
-  cost_price: number,
-}

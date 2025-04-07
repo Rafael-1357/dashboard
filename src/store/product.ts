@@ -1,54 +1,74 @@
 import { create } from "zustand";
-import { ProductList, PaginationMeta, SortOptions, FieldsProductsCreate } from "@/types/products.types";
-import { toast } from "@/hooks/use-toast";
+import { FormProductCreate, ProductList, ProductMeta, sortOptionType } from "@/types/products.types";
+import localforage from "localforage";
+import { toast } from "sonner"
+import { CircleCheck, TriangleAlert } from "lucide-react";
+import { createElement } from "react";
+import { productDetails, UnitModel } from "@/types/productDetails.types";
+import { productDetails as ProductDetailsType } from "@/types/productDetails.types.tsx";
+import { getProduct, updateProduct, updateUnitModel, createUnitModel } from "@/services/Details";
 
 type ProductStore = {
   products: ProductList[];
-  meta: PaginationMeta;
-  searchTerm: string;
-  stateFilter: number | null;
-  sortOptions: SortOptions;
-  requestProducts: () => void;
-  setCurrentPage: (page: number) => void;
-  setSearchTerm: (term: string) => void;
-  setStateFilter(): void;
-  setSortOptions: (field: string) => void;
-  createNewProduct: (fields: FieldsProductsCreate) => void;
-};
+  meta: ProductMeta;
+  sortOptions: sortOptionType;
+  stateProduct: number | null;
+  searchFilter: string | null;
+  productDetails: productDetails | null;
+  setSearchFilter(search: string): void;
+  requestProducts(urlpage: string | null): void;
+  setChangePage(page: string | null): void;
+  setSortOptions(option: sortOptionType): void;
+  setStateProduct(): void;
+  clearFilters(): void;
+  createProduct(data: FormProductCreate): void;
+  getProductDetails(id: string): void;
+  updateProductDetails(id: string, formData: ProductDetailsType): Promise<any>;
+  updateUnitModels(id: string, formData: any): Promise<any>;
+  newModel(unitModel: UnitModel): Promise<any>;
+}
 
 export const useProductStore = create<ProductStore>((set, get) => ({
   products: [],
   meta: {
     current_page: 1,
     from: 0,
-    last_page: 0,
+    last_page: 1,
     links: [],
-    path: "",
+    path: import.meta.env.VITE_API_URL,
     per_page: 0,
     to: 0,
     total: 0
   },
-  searchTerm: '',
-  stateFilter: null,
-  sortOptions: {
-    field: null,
-    direction: null,
-  },
-  requestProducts: () => {
-    const { meta, searchTerm, stateFilter, sortOptions } = get()
-    const baseUrl = `${import.meta.env.VITE_API_URL}/api/products?page=${meta.current_page}`;
-    const sortParam = sortOptions.field
-      ? `&sort[0]=${sortOptions.field}${sortOptions.direction === "desc" ? ":desc" : ""}`
-      : "";
-    const activeParam = stateFilter !== null ? `&filters[active][$eq]=${stateFilter}` : "";
-    const searchParam = searchTerm ? `&filters[name][$startsWith]=${searchTerm}` : "";
-    const url = baseUrl + sortParam + activeParam + searchParam;
+  sortOptions: { label: null, direction: null },
+  stateProduct: null,
+  searchFilter: null,
+  productDetails: null,
+  requestProducts: async (urlPage: string | null) => {
+    const token = (await localforage.getItem<string>('access_token')) || '';
+    const { sortOptions, stateProduct, searchFilter } = get()
+
+    const url = new URL(urlPage ?? `${import.meta.env.VITE_API_URL}/api/products`);
+    url.searchParams.append('per_page', '10');
+
+    if (sortOptions.label != null) {
+      url.searchParams.append("sort[0]", `${sortOptions.label}${sortOptions.direction}`);
+    }
+
+    if (stateProduct != null) {
+      url.searchParams.append("filters[active]", stateProduct.toString());
+    }
+
+    if (searchFilter) {
+      url.searchParams.append("filters[name][$startsWith]", searchFilter);
+    }
 
     fetch(url, {
+      method: 'GET',
       headers: {
-        "Content-type": "application/json",
-        Authorization: import.meta.env.VITE_API_TOKEN,
-      },
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      }
     })
       .then((response) => {
         if (!response.ok) throw new Error("Failed to fetch products");
@@ -57,101 +77,120 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       .then((result) => {
         set({
           products: result.data,
-          meta: result.meta
+          meta: result.meta,
         });
       })
       .catch((error) => {
         console.error("Error fetching products:", error);
       });
   },
-  setCurrentPage: (page) => {
+  setChangePage: (page: string | null) => {
     const { requestProducts } = get();
-    set((state) => ({
-      meta: {
-        ...state.meta,
-        current_page: page,
-      },
-    }));
-    requestProducts()
+    requestProducts(page);
   },
-  setSearchTerm: (term) => {
+  setSortOptions: (options: sortOptionType) => {
+    const { requestProducts } = get()
+
+    set({
+      sortOptions: {
+        label: options.label,
+        direction: options.direction
+      }
+    });
+
+    requestProducts(null)
+  },
+  setStateProduct: () => {
+    const { stateProduct, requestProducts } = get();
+
+    stateProduct == null ? set({ stateProduct: 1 }) : stateProduct === 1 ? set({ stateProduct: 0 }) : set({ stateProduct: 1 });
+    requestProducts(null)
+  },
+  setSearchFilter: (search: string) => {
     const { requestProducts } = get();
-    set((state) => ({
-      meta: {
-        ...state.meta,
-        current_page: 1
-      },
-      searchTerm: term,
-    }));
-    requestProducts()
-  },
-  setStateFilter: () => {
-    const { stateFilter, requestProducts } = get();
-    set((state) => ({
-      meta: {
-        ...state.meta,
-        current_page: 1
-      },
-      stateFilter: stateFilter === null ? 1 : stateFilter === 1 ? 0 : null,
-    }));
-    requestProducts()
-  },
-  setSortOptions: (field) => {
-    const { sortOptions, requestProducts } = get();
 
-    const newSortOptions: SortOptions =
-      sortOptions.field === field
-        ? {
-          field: sortOptions.direction === "asc" ? field : null,
-          direction:
-            sortOptions.direction === "asc"
-              ? "desc"
-              : sortOptions.direction === "desc"
-                ? null
-                : "asc",
-        }
-        : {
-          field,
-          direction: "asc",
-        };
-
-    set({ sortOptions: newSortOptions });
-    
-    requestProducts();
+    set({ searchFilter: search });
+    requestProducts(null);
   },
-  createNewProduct: (fields) => {
-    console.log(fields)
+  clearFilters: () => {
+    const { requestProducts } = get();
 
-    fetch(`${import.meta.env.VITE_API_URL}/api/products`, {
-      method: "POST",
+    set({
+      sortOptions: { label: null, direction: null },
+      stateProduct: null,
+      searchFilter: null
+    });
+
+    requestProducts(null);
+  },
+  createProduct: async (data: FormProductCreate) => {
+
+    const token = (await localforage.getItem<string>('access_token')) || '';
+    const url = `${import.meta.env.VITE_API_URL}/api/products`;
+
+    fetch(url, {
+      method: 'POST',
       headers: {
-        "Content-type": "application/json",
-        authorization: import.meta.env.VITE_API_TOKEN,
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
       },
-      body: JSON.stringify(fields)
+      body: JSON.stringify(data)
     })
-      .then(response => {
-        if (response.ok) {
-          toast({
-            variant: "created",
-            title: "Produto adicionado",
-            description: "Disponível na lista de produtos",
-          });
-        } else {
-          toast({
-            variant: "destructive",
-            title: "Erro",
-            description: "Ocorreu um erro ao adicionar o produto.",
-          });
-        }
+      .then((response) => {
+        if (!response.ok) throw new Error("Failed to fetch products");
+        return response.json();
+      })
+      .then((result) => {
+        set({
+          products: result.data,
+          meta: result.meta,
+        });
+        toast('Produto criado com sucesso', { icon: createElement(CircleCheck) })
       })
       .catch((error) => {
-        console.error("Erro ao enviar o produto:", error);
-        toast({
-          variant: "destructive",
-          title: "Erro de Rede",
-          description: "Verifique a conexão e tente novamente.",
-        });
+        console.error("Error fetching products:", error);
+        toast('Falha ao criar produto', { icon: createElement(TriangleAlert) })
       });
+  },
+  getProductDetails: async (id: string) => {
+    try {
+      const data = await getProduct(id);
+      set({ productDetails: data });
+    } catch (error) {
+      console.error('Error fetching product details:', error);
+    }
+  },
+  updateProductDetails: (id: string, formData: ProductDetailsType): Promise<any> => {
+    return updateProduct(id, formData)
+      .then((response) => {
+        const { getProductDetails, productDetails } = get();
+        getProductDetails(productDetails?.id ?? '');
+        return response
+      })
+      .catch((error) => Promise.reject(error));
+  },
+  updateUnitModels: (idModel: string, unitModel: any): Promise<any> => {
+    return updateUnitModel(idModel, unitModel)
+      .then((response) => {
+        const { getProductDetails, productDetails } = get();
+        getProductDetails(productDetails?.id ?? '');
+        return response
+      })
+      .catch((error) => Promise.reject(error));
+  },
+  newModel: (unitModel: UnitModel): Promise<any> => {
+    const { productDetails } = get();
+    if (productDetails?.id) {
+      return createUnitModel(productDetails.id, unitModel)
+        .then((response) => {
+          const { getProductDetails, productDetails } = get();
+          getProductDetails(productDetails?.id ?? '');
+          return response
+        })
+        .catch((error) => Promise.reject(error));
+    } else {
+      console.error("Product ID is undefined");
+      return Promise.reject(new Error("Product ID is undefined"));
+    }
   }
 }));
