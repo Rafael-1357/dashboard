@@ -1,17 +1,5 @@
 import { z } from "zod";
 
-export const unitModelSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(1),
-  stock_quantitative: z.number().int().min(0),
-  sale_price: z.number().min(0),
-  cost_price: z.number().min(0),
-  net_profit: z.number(),
-  profit_margin: z.number(),
-  return_on_investment: z.number(),
-  can_be_deleted: z.boolean(),
-});
-
 export const unitPreferencesSchema = z.object({
   listing_table: z.string().uuid(),
   stock_entry_selection: z.string().uuid(),
@@ -22,27 +10,17 @@ export const unitPreferencesSchema = z.object({
 
 export const productDetail = z.object({
   id: z.string().uuid(),
-  name: z.string().min(1),
-  category: z.string().min(1),
-  absolute_unit: z.string().min(1),
-  stock_threshold: z.number().int().min(0),
-  expiration_day_limit: z.number().int().min(0),
+  name: z.string({message: "É esperado texto"}).min(1, "Mínimo de 1 caractere").max(256, "Máximo de 256 caracteres"),
+  category: z.string({message: "É esperado texto"}).min(1, "Mínimo de 1 caractere").max(256, "Máximo de 256 caracteres"),
+  absolute_unit: z.string({message: "É esperado texto"}).min(1, "Mínimo de 1 caractere").max(256, "Máximo de 256 caracteres"),
+  stock_threshold: z.number({message: "É esperado um número"}).min(0, "O número deve ser 0 ou maior").max(9999999, "Limite máximo de 7 dígitos"),
+  expiration_day_limit: z.number({message: "É esperado um número"}).min(0, "O número deve ser 0 ou maior").max(9999999, "Limite máximo de 7 dígitos"),
 })
 
-export const productSchema = z.object({
-  id: z.string().uuid(),
-  name: z.string().min(1),
-  category: z.string().min(1),
-  absolute_unit: z.string().min(1),
-  stock_threshold: z.number().int().min(0),
-  expiration_day_limit: z.number().int().min(0),
-  total_in_stock: z.number().int().min(0),
-  currently_monthly_revenue: z.number().min(0),
-  created_at: z.string().datetime(),
-  can_be_deleted: z.boolean(),
-  unit_models: z.object({
-    all: z.array(unitModelSchema),
-    preferences: unitPreferencesSchema,
-  }),
+export const unitModelEdit = z.object({
+  name: z.string({message: "É esperado texto"}).min(1, "Mínimo de 1 caractere").max(256, "Máximo de 256 caracteres"),
+  stock_quantitative: z.number({message: "É esperado 1 número"}).min(0, "O número deve ser 0 ou maior").max(9999999, "Limite máximo de 7 dígitos"),
+  sale_price: z.number({message: "É esperado 1 número"}).min(0, "O número deve ser 0 ou maior").max(9999999, "Limite máximo de 7 dígitos"),
+  cost_price: z.number({message: "É esperado 1 número"}).min(0, "O número deve ser 0 ou maior").max(9999999, "Limite máximo de 7 dígitos"),
 });
 

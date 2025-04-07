@@ -1,11 +1,11 @@
 import { z } from 'zod';
 
-const productSchema = z.object({
-  name: z.string().min(1, { message: "O nome é obrigatório" }),
-  category: z.string().min(1, { message: "A categoria é obrigatória" }),
-  absolute_unit: z.string().min(1, { message: "A unidade é obrigatória" }),
-  stock_threshold: z.number({invalid_type_error: "O número deve ser positivo ou igual a zero"}).int().nonnegative({ message: "O número deve ser positivo ou igual zero" }),
-  expiration_day_limit: z.number({invalid_type_error: "O número deve ser positivo ou igual a zero"}).int().nonnegative({ message: "O número deve ser positivo ou igual a zero" }),
+export const productSchema = z.object({
+  name: z.string({message: "É esperado texto"}).min(1, "Mínimo de 1 caractere").max(256, "Máximo de 256 caracteres"),
+  category: z.string({message: "É esperado texto"}).min(1, "Mínimo de 1 caractere").max(256, "Máximo de 256 caracteres"),
+  absolute_unit: z.string({message: "É esperado texto"}).min(1, "Mínimo de 1 caractere").max(256, "Máximo de 256 caracteres"),
+  stock_threshold: z.number({message: "É esperado um número"}).min(0, "O número deve ser 0 ou maior").max(9999999, "Limite máximo de 7 dígitos"),
+  expiration_day_limit: z.number({message: "É esperado um número"}).min(0, "O número deve ser 0 ou maior").max(9999999, "Limite máximo de 7 dígitos"),
 });
 
 export default productSchema;

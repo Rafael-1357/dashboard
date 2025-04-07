@@ -5,8 +5,8 @@ import {
   PaginationItem,
   PaginationLink,
 } from "@/components/ui/pagination";
-import { useProductStore } from "@/store/product";
-import { format, parseISO, set } from "date-fns"
+import { useProductStore } from "@/store/product_old";
+import { format, parseISO } from "date-fns"
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { sortOptionType } from "@/types/products.types";

@@ -1,4 +1,4 @@
-import { useProductStore } from "@/store/product"
+import { useProductStore } from "@/store/product_old"
 import { useEffect } from "react";
 import ProductTable from "@/components/productsTable";
 import Header from "@/components/helpers/header";

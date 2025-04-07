@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/sonner"
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <BrowserRouter> {/* Envolva o App com o BrowserRouter */}
+    <BrowserRouter>
       <App />
       <Toaster />
     </BrowserRouter>

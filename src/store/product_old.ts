@@ -4,9 +4,7 @@ import localforage from "localforage";
 import { toast } from "sonner"
 import { CircleCheck, TriangleAlert } from "lucide-react";
 import { createElement } from "react";
-import { productDetails, UnitModel } from "@/types/productDetails.types";
-import { productDetails as ProductDetailsType } from "@/types/productDetails.types.tsx";
-import { getProduct, updateProduct, updateUnitModel, createUnitModel } from "@/services/Details";
+import { productDetails } from "@/types/productDetails.types";
 
 type ProductStore = {
   products: ProductList[];
@@ -22,10 +20,8 @@ type ProductStore = {
   setStateProduct(): void;
   clearFilters(): void;
   createProduct(data: FormProductCreate): void;
-  getProductDetails(id: string): void;
-  updateProductDetails(id: string, formData: ProductDetailsType): Promise<any>;
-  updateUnitModels(id: string, formData: any): Promise<any>;
-  newModel(unitModel: UnitModel): Promise<any>;
+  setProductDetails(data: productDetails): void;
+  updateProductDetails(data: any): void;
 }
 
 export const useProductStore = create<ProductStore>((set, get) => ({
@@ -152,45 +148,10 @@ export const useProductStore = create<ProductStore>((set, get) => ({
         toast('Falha ao criar produto', { icon: createElement(TriangleAlert) })
       });
   },
-  getProductDetails: async (id: string) => {
-    try {
-      const data = await getProduct(id);
-      set({ productDetails: data });
-    } catch (error) {
-      console.error('Error fetching product details:', error);
-    }
+  setProductDetails: (data) => {
+    set({ productDetails: data });
   },
-  updateProductDetails: (id: string, formData: ProductDetailsType): Promise<any> => {
-    return updateProduct(id, formData)
-      .then((response) => {
-        const { getProductDetails, productDetails } = get();
-        getProductDetails(productDetails?.id ?? '');
-        return response
-      })
-      .catch((error) => Promise.reject(error));
-  },
-  updateUnitModels: (idModel: string, unitModel: any): Promise<any> => {
-    return updateUnitModel(idModel, unitModel)
-      .then((response) => {
-        const { getProductDetails, productDetails } = get();
-        getProductDetails(productDetails?.id ?? '');
-        return response
-      })
-      .catch((error) => Promise.reject(error));
-  },
-  newModel: (unitModel: UnitModel): Promise<any> => {
-    const { productDetails } = get();
-    if (productDetails?.id) {
-      return createUnitModel(productDetails.id, unitModel)
-        .then((response) => {
-          const { getProductDetails, productDetails } = get();
-          getProductDetails(productDetails?.id ?? '');
-          return response
-        })
-        .catch((error) => Promise.reject(error));
-    } else {
-      console.error("Product ID is undefined");
-      return Promise.reject(new Error("Product ID is undefined"));
-    }
+  updateProductDetails: () => {
+
   }
 }));

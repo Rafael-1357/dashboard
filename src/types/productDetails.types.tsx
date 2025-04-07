@@ -1,4 +1,6 @@
 export type UnitModel = {
+  created_at: any;
+  updated_at: any;
   id: string;
   name: string;
   stock_quantitative: number;
@@ -16,6 +18,13 @@ export type UnitModelPreferences = {
   sale_selection: string;
   loss_selection: string;
   stock_threshold: string;
+};
+
+export type unitModelFormEditType = {
+  name: string;
+  stock_quantitative: number;
+  sale_price: number;
+  cost_price: number;
 };
 
 export type productDetail = {

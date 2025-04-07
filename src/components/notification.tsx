@@ -70,8 +70,6 @@ function Notification() {
   }, []);
 
   function markAsRead() {
-    console.log('Notificações marcadas como lidas')
-
     async function markAsReadNotifications() {
       const token = await getToken();
 

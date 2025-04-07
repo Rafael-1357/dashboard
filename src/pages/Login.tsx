@@ -59,7 +59,6 @@ function Login() {
         const result = await response.json();
         localforage.setItem('access_token', result.access_token)
           .then(() => {
-            console.log('Token salvo com sucesso');
             navigate('/home');
             toast("Login efetuado com sucesso!", { icon: <CircleCheck /> });
           })
