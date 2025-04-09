@@ -6,7 +6,7 @@ import { CircleCheck, TriangleAlert } from "lucide-react";
 import { createElement } from "react";
 import { productDetails, UnitModel } from "@/types/productDetails.types";
 import { productDetails as ProductDetailsType } from "@/types/productDetails.types.tsx";
-import { getProduct, updateProduct, updateUnitModel, createUnitModel } from "@/services/Details";
+import { getProduct, updateProduct, updateUnitModel, createUnitModel, deleteUnitModel } from "@/services/Details";
 
 type ProductStore = {
   products: ProductList[];
@@ -26,6 +26,7 @@ type ProductStore = {
   updateProductDetails(id: string, formData: ProductDetailsType): Promise<any>;
   updateUnitModels(id: string, formData: any): Promise<any>;
   newModel(unitModel: UnitModel): Promise<any>;
+  deleteModel(idModel: string): Promise<any>;
 }
 
 export const useProductStore = create<ProductStore>((set, get) => ({
@@ -179,11 +180,10 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       .catch((error) => Promise.reject(error));
   },
   newModel: (unitModel: UnitModel): Promise<any> => {
-    const { productDetails } = get();
+    const { productDetails, getProductDetails } = get();
     if (productDetails?.id) {
       return createUnitModel(productDetails.id, unitModel)
         .then((response) => {
-          const { getProductDetails, productDetails } = get();
           getProductDetails(productDetails?.id ?? '');
           return response
         })
@@ -192,5 +192,14 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       console.error("Product ID is undefined");
       return Promise.reject(new Error("Product ID is undefined"));
     }
+  },
+  deleteModel: (idModel: string) => {
+    return deleteUnitModel(idModel)
+      .then((response) => {
+        const { getProductDetails, productDetails } = get();
+        getProductDetails(productDetails?.id ?? '');
+        return response
+      })
+      .catch((error) => Promise.reject(error))
   }
 }));

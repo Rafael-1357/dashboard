@@ -6,16 +6,17 @@ import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import { Badge } from "./ui/badge";
 import { useEffect, useState } from "react";
-import { LoaderCircle, Percent } from "lucide-react";
+import { Ellipsis, LoaderCircle, Percent } from "lucide-react";
 import { Switch } from "./ui/switch";
 import { UnitModel, unitModelFormEditType } from "@/types/productDetails.types";
 import { toast } from "sonner";
 import { useProductStore } from "@/store/product";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "./ui/dropdown-menu";
 
 
 
 function UnitModelEdit(model: UnitModel) {
-  const { productDetails, updateUnitModels } = useProductStore()
+  const { productDetails, updateUnitModels, deleteModel } = useProductStore()
   const [isEditable, setIsEditable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -40,6 +41,20 @@ function UnitModelEdit(model: UnitModel) {
     reset()
   };
 
+  async function handleDelete() {
+    deleteModel(model.id)
+      .then(() => {
+        toast.success("Modelo deletado com sucesso!");
+      })
+      .catch((error) => {
+        toast.error("Erro ao tentar deletar produto", { description: error.message });
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+
   async function onSubmit(data: unitModelFormEditType) {
     setIsLoading(true);
     updateUnitModels(model.id, data)
@@ -60,6 +75,26 @@ function UnitModelEdit(model: UnitModel) {
       <div className="flex justify-end items-center space-x-2">
         <Label htmlFor="edit">Edição</Label>
         <Switch type="button" id="edit" onClick={toggleEditMode} checked={isEditable} />
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild className="h-auto">
+            <Button variant="outline"><Ellipsis /></Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="w-56">
+            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" asChild>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer"
+              disabled={!model.can_be_deleted}
+              onClick={() => handleDelete()}
+            >
+              Deletar
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              Desativar
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
       <div className="flex gap-2 flex-wrap flex-row">
         <div className="w-full">

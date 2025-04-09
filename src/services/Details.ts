@@ -75,5 +75,22 @@ export async function createUnitModel(idProduct: string, unitModel: unitModelFor
   return response.ok
 }
 
+export async function deleteUnitModel(idModel: string) {
+  const response = await fetch(`${URL}/api/products/unit-models/${idModel}/force`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    throw new Error(errorData.message || 'Failed to update product details');
+  }
+
+  return response.ok
+}
+
 
 

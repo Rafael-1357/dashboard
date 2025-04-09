@@ -12,6 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/
 import { Badge } from "./ui/badge";
 import { LoaderCircle } from "lucide-react";
 import { format, parseISO } from "date-fns";
+import { Switch } from "./ui/switch";
 
 type ProductDetailsInfoProps = {
   id: string;
@@ -74,9 +75,10 @@ function ProductDetailsInfo({ id }: ProductDetailsInfoProps) {
           <CardTitle className="text-2xl">Detalhes do produto</CardTitle>
           <CardDescription>Visualize e edite o produto</CardDescription>
         </div>
-        <Button onClick={toggleEditMode}>
-          {isEditable ? "Desabilitar Edição" : "Habilitar Edição"}
-        </Button>
+        <div className="flex gap-2 h-6 items-center">
+          <Label htmlFor="edit">Edição</Label>
+          <Switch type="button" id="edit" onClick={toggleEditMode} checked={isEditable} />
+        </div>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
