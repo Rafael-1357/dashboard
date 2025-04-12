@@ -42,6 +42,7 @@ function UnitModelEdit(model: UnitModel) {
   };
 
   async function handleDelete() {
+    setIsLoading(true);
     deleteModel(model.id)
       .then(() => {
         toast.success("Modelo deletado com sucesso!");

@@ -24,3 +24,10 @@ export const unitModelEdit = z.object({
   cost_price: z.number({message: "É esperado 1 número"}).min(0, "O número deve ser 0 ou maior").max(9999999, "Limite máximo de 7 dígitos"),
 });
 
+export const preferencieEdit = z.object({
+  listing_table: z.string({ message: "O campo deve ser preenchido" }).nullable().optional(),
+  stock_entry_selection: z.string({ message: "O campo deve ser preenchido" }).nullable().optional(),
+  sale_selection: z.string({ message: "O campo deve ser preenchido" }).nullable(),
+  loss_selection: z.string({ message: "O campo deve ser preenchido" }).nullable(),
+  stock_threshold: z.string({ message: "O campo deve ser preenchido" }).nullable()
+});

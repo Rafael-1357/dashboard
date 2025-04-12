@@ -1,4 +1,5 @@
 export type UnitModel = {
+  preferences: any;
   created_at: any;
   updated_at: any;
   id: string;

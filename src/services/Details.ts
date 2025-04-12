@@ -92,5 +92,25 @@ export async function deleteUnitModel(idModel: string) {
   return response.ok
 }
 
+export async function updatePreferences(idProduct: string, data: any) {
+  const response = await fetch(`${URL}/api/products/${idProduct}/unit-models/preferences`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${token}`,
+    },
+    body: JSON.stringify(data)
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json();
+    console.log(errorData);
+    throw new Error(errorData.message || 'Failed to update product details');
+  }
+
+  console.log(response);
+  return response.ok
+}
+
 
 
