@@ -108,7 +108,6 @@ export async function updatePreferences(idProduct: string, data: any) {
     throw new Error(errorData.message || 'Failed to update product details');
   }
 
-  console.log(response);
   return response.ok
 }
 
