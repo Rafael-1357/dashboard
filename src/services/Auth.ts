@@ -6,7 +6,7 @@ import { z } from "zod";
 const URL = import.meta.env.VITE_API_URL
 
 export function logout(navigate: (path: string) => void) {
-  fetch(URL + "/api/auth/login", {
+  fetch(URL + "/api/auth/logout", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
