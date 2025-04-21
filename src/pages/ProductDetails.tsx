@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useProductStore } from "@/store/product";
 import ProductDetailsInfo from "@/components/productDetailsInfo";
 import ProductDetailsUnitModels from "@/components/productDetailsUnitModels";
+import ProductDetailsPreferences from "@/components/productDetailsPreferences";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -22,6 +23,7 @@ function ProductDetails() {
       <div className="p-4 flex flex-col gap-4">
         {id && <ProductDetailsInfo id={id} />}
         {id && <ProductDetailsUnitModels />}
+        {id && <ProductDetailsPreferences />}
       </div>
     </div>
   );

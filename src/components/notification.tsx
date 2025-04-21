@@ -6,120 +6,93 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import localforage from "localforage";
-import { Bell, CircleCheck, Trash2Icon, TriangleAlert } from "lucide-react"
+import { Bell, BellDot, CircleCheck, LoaderCircle, Trash2Icon, TriangleAlert } from "lucide-react"
 import { useEffect, useState } from "react"
-import { NotificationType } from "@/types/notification.types"
+import { NotificationMeta, NotificationType } from "@/types/notification.types"
 import { toast } from "sonner";
-
-type MetaLinks = {
-  url: string | null,
-  label: string,
-  active: boolean
-};
-
-type NotificationMeta = {
-  current_page: number,
-  from: number,
-  last_page: number,
-  links: MetaLinks[],
-  path: string,
-  per_page: number,
-  to: number,
-  total: number
-};
+import { deleteAll, deleteNotifications, getNotification, hasUnreadNotifications, markAsRead } from "@/services/notifications";
+import { Separator } from "@radix-ui/react-separator";
 
 function Notification() {
 
   const [notifications, setNotifications] = useState<NotificationType[]>([]);
   const [metaNotifications, setMetaNotifications] = useState<NotificationMeta>({ current_page: 0, from: 0, last_page: 0, links: [], path: '', per_page: 0, to: 0, total: 0 });
+  const [isLoading, setIsLoading] = useState(false);
+  const [readNotifications, setReadNotifications] = useState(false);
 
-  async function getToken() {
-    return (await localforage.getItem<string>('access_token')) || '';
-  }
 
-  async function getNotifications(page: string | null) {
-    const token = await getToken();
-
-    let url = import.meta.env.VITE_API_URL + '/api/notifications';
-    if (page) {
-      url += `?page=${page}`;
-    }
-
-    fetch(url, {
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-    })
-      .then(response => response.json())
+  async function unreadNotifications() {
+    hasUnreadNotifications()
       .then(data => {
-        page ? setNotifications((prevNotifications) => {
-          const novasNotificacoes = data.data.filter(
-            (n: any) => !prevNotifications.some((prev) => prev.id === n.id)
-          );
-          return [...prevNotifications, ...novasNotificacoes];
-        }) : setNotifications(data.data);
-        setMetaNotifications(data.meta)
+        setReadNotifications(data.has_unread_notifications);
       })
       .catch(error => console.error('Error fetching notifications:', error));
   }
 
-  useEffect(() => {
-    getNotifications(null);
-  }, []);
+  async function getNotifications(page: string | null = null, append = false) {
+    if (isLoading) return;
 
-  function markAsRead() {
-    async function markAsReadNotifications() {
-      const token = await getToken();
+    setIsLoading(true);
 
-      fetch(import.meta.env.VITE_API_URL + '/api/notifications/mark-as-read', {
-        method: 'PUT',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
+    getNotification(page)
+      .then(data => {
+        if (append) {
+          setNotifications(prev => [...prev, ...data.data]);
+        } else {
+          setNotifications(data.data);
+        }
+        setMetaNotifications(data.meta);
       })
-        .then(() => {
-          toast('Notificações lidas com sucesso', { icon: <CircleCheck /> })
-          getNotifications(null);
-        })
-        .catch(error => {
-          console.error('Error fetching notifications:', error);
-          toast('Falha ao ler notificações', { icon: <TriangleAlert /> })
-        });
-    }
-
-    markAsReadNotifications();
+      .catch(error => {
+        console.error('Error fetching notifications:', error);
+      }).finally(() => {
+        setIsLoading(false);
+      });
   }
 
-  async function deleteNotifications(id: string) {
 
-    const token = await getToken();
+  useEffect(() => {
+    getNotifications();
+    unreadNotifications()
+  }, []);
 
-    async function deleteNotification(id: string) {
-      fetch(import.meta.env.VITE_API_URL + `/api/notifications/${id}`, {
-        method: 'DELETE',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-      }).then(() => {
-        setNotifications((prevNotifications) => prevNotifications.filter((notification) => notification.id !== id));
-        toast('Notificação deletada com sucesso', { icon: <CircleCheck /> })
-      }).catch(error => {
+  async function read() {
+    markAsRead()
+      .then(() => {
+        setNotifications((prevNotifications) => prevNotifications.map((notification) => ({ ...notification, read: true })));
+        unreadNotifications()
+        toast('Notificações marcadas como lidas', { icon: <CircleCheck /> })
+      })
+      .catch(error => {
         console.error('Error fetching notifications:', error);
-        toast('Falha ao deletar notificação', { icon: <TriangleAlert /> })
+        toast('Falha ao marcar notificações como lidas', { icon: <TriangleAlert /> })
       });
-    }
-    
-    deleteNotification(id);
+  }
+
+  async function deleteNotification(id: string) {
+    deleteNotifications(id).then(() => {
+      setNotifications((prevNotifications) => prevNotifications.filter((notification) => notification.id !== id));
+      toast('Notificação deletada com sucesso', { icon: <CircleCheck /> })
+    }).catch(error => {
+      console.error('Error fetching notifications:', error);
+      toast('Falha ao deletar notificação', { icon: <TriangleAlert /> })
+    });
+  }
+
+  async function deleteAllNotifications() {
+    deleteAll().then(() => {
+      setNotifications([]);
+      toast('Notificaçãos deletadas com sucesso', { icon: <CircleCheck /> })
+    }).catch(error => {
+      console.error('Error fetching notifications:', error);
+      toast('Falha ao deletar notificaçãos', { icon: <TriangleAlert /> })
+    });
   }
 
   function scrolling(e: HTMLElement) {
-    if (e.scrollHeight - e.scrollTop === e.clientHeight) {
+    if (e.scrollHeight - e.scrollTop === e.clientHeight && !isLoading) {
       if (metaNotifications?.current_page !== metaNotifications?.last_page) {
-        getNotifications((metaNotifications?.current_page + 1).toString());
+        getNotifications((metaNotifications?.current_page + 1).toString(), true);
       }
     }
   }
@@ -142,24 +115,35 @@ function Notification() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Bell />
+      <DropdownMenuTrigger asChild className="cursor-pointer">
+        {
+          readNotifications ? <BellDot className="animate-pulse" /> : <Bell />
+        }
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mx-4">
         <div className="flex justify-between">
           <DropdownMenuLabel>Notificações</DropdownMenuLabel>
-          <DropdownMenuLabel
-            className="text-xs text-muted-foreground hover:text-purple-500 hover:underline underline-offset-1 cursor-pointer"
-            onClick={() => markAsRead()}
-          >
-            Marcar como lida
-          </DropdownMenuLabel>
+          <div className="flex items-center">
+            <DropdownMenuLabel
+              className="text-xs text-muted-foreground hover:text-purple-500 hover:underline underline-offset-1 cursor-pointer"
+              onClick={() => deleteAllNotifications()}
+            >
+              Apagar todas
+            </DropdownMenuLabel>
+            <Separator className="mx-2 h-4 border" orientation="vertical" />
+            <DropdownMenuLabel
+              className="text-xs text-muted-foreground hover:text-purple-500 hover:underline underline-offset-1 cursor-pointer"
+              onClick={() => read()}
+            >
+              Ler todas
+            </DropdownMenuLabel>
+          </div>
         </div>
         <div className="max-w-xs max-h-96 overflow-y-auto overflow-x-hidden"
           onScroll={(e) => scrolling(e.currentTarget)}
         >
-          {notifications.length > 0 ? notifications.map((notification) => (
-            <div key={notification.id}>
+          {notifications.length > 0 ? notifications.map((notification, index) => (
+            <div key={notification.id + index}>
               <DropdownMenuItem
                 className="flex flex-col gap-1 items-start"
                 onSelect={(event) => {
@@ -168,7 +152,7 @@ function Notification() {
               >
                 <div className="flex justify-between w-full">
                   {notification.read ? <p className="text-sm text-muted-foreground text-purple-500">lida</p> : <p className="text-sm text-muted-foreground">Não lida</p>}
-                  <button onClick={() => deleteNotifications(notification.id)}> <Trash2Icon /></button>
+                  <button onClick={() => deleteNotification(notification.id)}> <Trash2Icon /></button>
                 </div>
                 <div
                   id="notification"
@@ -182,6 +166,7 @@ function Notification() {
               <DropdownMenuSeparator />
             </div>
           )) : <DropdownMenuItem>Nenhuma notificação</DropdownMenuItem>}
+          {isLoading && <div className="flex justify-center p-8"><LoaderCircle className="animate-spin" /></div>}
         </div>
       </DropdownMenuContent>
     </DropdownMenu>
