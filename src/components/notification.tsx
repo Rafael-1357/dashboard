@@ -20,6 +20,7 @@ function Notification() {
   const [isLoading, setIsLoading] = useState(false);
   const [readNotifications, setReadNotifications] = useState(false);
 
+
   async function unreadNotifications() {
     hasUnreadNotifications()
       .then(data => {
@@ -28,14 +29,30 @@ function Notification() {
       .catch(error => console.error('Error fetching notifications:', error));
   }
 
-  useEffect(() => {
-    getNotification(null)
+  async function getNotifications(page: string | null = null, append = false) {
+    if (isLoading) return;
+
+    setIsLoading(true);
+
+    getNotification(page)
       .then(data => {
-        setNotifications(data.data);
+        if (append) {
+          setNotifications(prev => [...prev, ...data.data]);
+        } else {
+          setNotifications(data.data);
+        }
         setMetaNotifications(data.meta);
       })
-      .catch(error => console.error('Error fetching notifications:', error));
-    loadNotifications(null);
+      .catch(error => {
+        console.error('Error fetching notifications:', error);
+      }).finally(() => {
+        setIsLoading(false);
+      });
+  }
+
+
+  useEffect(() => {
+    getNotifications();
     unreadNotifications()
   }, []);
 
@@ -43,13 +60,13 @@ function Notification() {
     markAsRead()
       .then(() => {
         setNotifications((prevNotifications) => prevNotifications.map((notification) => ({ ...notification, read: true })));
+        unreadNotifications()
         toast('Notificações marcadas como lidas', { icon: <CircleCheck /> })
       })
       .catch(error => {
         console.error('Error fetching notifications:', error);
         toast('Falha ao marcar notificações como lidas', { icon: <TriangleAlert /> })
       });
-    unreadNotifications()
   }
 
   async function deleteNotification(id: string) {
@@ -75,29 +92,10 @@ function Notification() {
   function scrolling(e: HTMLElement) {
     if (e.scrollHeight - e.scrollTop === e.clientHeight && !isLoading) {
       if (metaNotifications?.current_page !== metaNotifications?.last_page) {
-        loadNotifications((metaNotifications?.current_page + 1).toString(), true);
+        getNotifications((metaNotifications?.current_page + 1).toString(), true);
       }
     }
   }
-
-  const loadNotifications = async (page: string | null, append = false) => {
-    if (isLoading) return;
-
-    setIsLoading(true);
-    try {
-      const data = await getNotification(page);
-      if (append) {
-        setNotifications(prev => [...prev, ...data.data]);
-      } else {
-        setNotifications(data.data);
-      }
-      setMetaNotifications(data.meta);
-    } catch (error) {
-      console.error('Error fetching notifications:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   const cssAppliedContent = (body: any) => `
   <div>
@@ -119,7 +117,7 @@ function Notification() {
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="cursor-pointer">
         {
-          readNotifications ? <BellDot /> : <Bell />
+          readNotifications ? <BellDot className="animate-pulse" /> : <Bell />
         }
       </DropdownMenuTrigger>
       <DropdownMenuContent className="mx-4">
