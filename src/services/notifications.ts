@@ -3,7 +3,7 @@ import localforage from "localforage";
 const URL = import.meta.env.VITE_API_URL;
 const token = (await localforage.getItem<string>('access_token')) || '';
 
-export async function getNotification(page: string | null) {
+export async function getNotification(page: string) {
   let newURL = URL + '/api/notifications';
 
   if (page) {
