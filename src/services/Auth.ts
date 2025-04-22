@@ -4,13 +4,14 @@ import loginSchema from "@/schemas/loginSchema";
 import { z } from "zod";
 
 const URL = import.meta.env.VITE_API_URL
+const token = (await localforage.getItem<string>('access_token'));
 
 export function logout(navigate: (path: string) => void) {
   fetch(URL + "/api/auth/logout", {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + localforage.getItem("access_token"),
+      "Authorization": `Bearer ${token}`,
     },
   })
     .then(() => {

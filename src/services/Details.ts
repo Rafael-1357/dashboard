@@ -2,7 +2,7 @@ import { productDetail, unitModelFormEditType } from "@/types/productDetails.typ
 import localforage from "localforage";
 
 const URL = import.meta.env.VITE_API_URL;
-const token = (await localforage.getItem<string>('access_token')) || ''
+const token = (await localforage.getItem<string>('access_token'));
 
 export async function getProduct(id: string) {
   const response = await fetch(`${URL}/api/products/${id}/details?type=id`, {
