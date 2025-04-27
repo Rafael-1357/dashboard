@@ -5,6 +5,7 @@ import { useProductStore } from "@/store/product";
 import ProductDetailsInfo from "@/components/productDetailsInfo";
 import ProductDetailsUnitModels from "@/components/productDetailsUnitModels";
 import ProductDetailsPreferences from "@/components/productDetailsPreferences";
+import ProductBatch from "@/components/ProductBatch";
 
 function ProductDetails() {
   const { id } = useParams();
@@ -16,7 +17,7 @@ function ProductDetails() {
     }
   }, [id, getProductDetails])
 
-  
+
   return (
     <div>
       <Header data={[{ label: "Produtos", href: "/produtos" }, { label: "Detalhes", href: "" }]} />
@@ -24,6 +25,7 @@ function ProductDetails() {
         {id && <ProductDetailsInfo id={id} />}
         {id && <ProductDetailsUnitModels />}
         {id && <ProductDetailsPreferences />}
+        {id && <ProductBatch id={id} />}
       </div>
     </div>
   );
