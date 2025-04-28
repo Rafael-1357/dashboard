@@ -25,9 +25,9 @@ export const unitModelEdit = z.object({
 });
 
 export const preferencieEdit = z.object({
-  listing_table: z.string({ message: "O campo deve ser preenchido" }).nullable().optional(),
-  stock_entry_selection: z.string({ message: "O campo deve ser preenchido" }).nullable().optional(),
-  sale_selection: z.string({ message: "O campo deve ser preenchido" }).nullable(),
-  loss_selection: z.string({ message: "O campo deve ser preenchido" }).nullable(),
-  stock_threshold: z.string({ message: "O campo deve ser preenchido" }).nullable()
+  listing_table: z.string().optional(),
+  stock_entry_selection: z.string().optional(),
+  sale_selection: z.string().optional(),
+  loss_selection: z.string().optional(),
+  stock_threshold: z.string().optional()
 });

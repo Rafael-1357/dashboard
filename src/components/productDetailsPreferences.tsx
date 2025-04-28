@@ -12,28 +12,18 @@ import { Button } from './ui/button';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FormProvider } from 'react-hook-form';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Label } from './ui/label';
 import { Switch } from './ui/switch';
 import { toast } from 'sonner';
 import { preferencieEdit } from '@/schemas/productDetails';
+import { Form } from './ui/form';
+import { ProductDetailsSkeleton } from './helpers/ProductDetailsSkeleton';
 
 function ProductDetailsPreferences() {
   const { productDetails, editUnitModelsPreferences } = useProductStore();
   const [isEditable, setIsEditable] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-
-  const toggleEditMode = () => {
-    setIsEditable((prev) => !prev);
-    reset({
-      listing_table: preferences.listing_table,
-      stock_entry_selection: preferences.stock_entry_selection,
-      sale_selection: preferences.sale_selection,
-      loss_selection: preferences.loss_selection,
-      stock_threshold: preferences.stock_threshold
-    })
-  };
 
   const methods = useForm<z.infer<typeof preferencieEdit>>({
     resolver: zodResolver(preferencieEdit),
@@ -46,24 +36,43 @@ function ProductDetailsPreferences() {
     },
   });
 
-  const { reset } = methods;
+  const { reset, watch } = methods;
 
-  if (!productDetails) {
-    return <div className="flex justify-center p-8"><LoaderCircle className="animate-spin" /></div>;
-  }
+  const preferences = productDetails?.unit_models?.preferences ?? {
+    listing_table: "",
+    stock_entry_selection: "",
+    sale_selection: "",
+    loss_selection: "",
+    stock_threshold: ""
+  };
 
-  const { unit_models } = productDetails;
-  const preferences = productDetails.unit_models.preferences;
-  const models = unit_models.all;
+  const models = productDetails?.unit_models?.all ?? [];
 
-  if (preferences.listing_table && methods.getValues('listing_table') === "") {
-    methods.reset({
+  useEffect(() => {
+    if (productDetails && preferences.listing_table && !watch('listing_table')) {
+      reset({
+        listing_table: preferences.listing_table,
+        stock_entry_selection: preferences.stock_entry_selection,
+        sale_selection: preferences.sale_selection,
+        loss_selection: preferences.loss_selection,
+        stock_threshold: preferences.stock_threshold
+      });
+    }
+  }, [productDetails, preferences, reset, watch]);
+
+  const toggleEditMode = () => {
+    setIsEditable(prev => !prev);
+    reset({
       listing_table: preferences.listing_table,
       stock_entry_selection: preferences.stock_entry_selection,
       sale_selection: preferences.sale_selection,
       loss_selection: preferences.loss_selection,
       stock_threshold: preferences.stock_threshold
     });
+  };
+
+  if (!productDetails) {
+    return <ProductDetailsSkeleton />
   }
 
   function onSubmit(data: z.infer<typeof preferencieEdit>) {
@@ -94,9 +103,9 @@ function ProductDetailsPreferences() {
         </div>
       </CardHeader>
       <CardContent>
-        <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
+        <Form {...methods}>
+          <form onSubmit={methods.handleSubmit(onSubmit)} className="flex gap-2 flex-wrap flex-row">
+            <div className="flex-1 basis-[calc(50%-0.25rem)]">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Listagem em tabela
               </label>
@@ -122,7 +131,7 @@ function ProductDetailsPreferences() {
                 </p>
               )}
             </div>
-            <div className="space-y-2">
+            <div className="flex-1 basis-[calc(50%-0.25rem)]">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Entrada de estoque
               </label>
@@ -149,7 +158,7 @@ function ProductDetailsPreferences() {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="flex-1 basis-[calc(50%-0.25rem)]">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Seleção de venda
               </label>
@@ -176,7 +185,7 @@ function ProductDetailsPreferences() {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="flex-1 basis-[calc(50%-0.25rem)]">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Seleção de perda
               </label>
@@ -203,7 +212,7 @@ function ProductDetailsPreferences() {
               )}
             </div>
 
-            <div className="space-y-2">
+            <div className="flex-1 basis-[calc(50%-0.25rem)]">
               <label className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70">
                 Limite de estoque
               </label>
@@ -240,7 +249,7 @@ function ProductDetailsPreferences() {
               )}
             </div>
           </form>
-        </FormProvider>
+        </Form>
       </CardContent>
     </Card >
   );

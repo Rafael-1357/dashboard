@@ -13,6 +13,7 @@ import { Badge } from "./ui/badge";
 import { LoaderCircle } from "lucide-react";
 import { format, parseISO } from "date-fns";
 import { Switch } from "./ui/switch";
+import { ProductDetailsSkeleton } from "./helpers/ProductDetailsSkeleton";
 
 type ProductDetailsInfoProps = {
   id: string;
@@ -65,7 +66,7 @@ function ProductDetailsInfo({ id }: ProductDetailsInfoProps) {
   };
 
   if (!productDetails) {
-    return <div className="flex justify-center p-8"><LoaderCircle className="animate-spin" /></div>
+    return <ProductDetailsSkeleton />
   }
 
   return (

@@ -2,9 +2,9 @@ import { useProductStore } from "@/store/product";
 import {useState } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "./ui/card";
 import UnitModelEdit from "./unitModelEdit";
-import { LoaderCircle } from "lucide-react";
 import { Button } from "./ui/button";
 import NewModel from "./newModel";
+import { ProductDetailsSkeleton } from "./helpers/ProductDetailsSkeleton";
 
 
 function ProductDetailsUnitModels() {
@@ -12,7 +12,7 @@ function ProductDetailsUnitModels() {
   const [showNewModel, setShowNewModel] = useState(false);
 
   if (!productDetails) {
-    return <div className="flex justify-center p-8"><LoaderCircle className="animate-spin" /></div>
+    return <ProductDetailsSkeleton />
   }
 
   return (
