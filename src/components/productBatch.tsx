@@ -8,14 +8,17 @@ import { Pagination, PaginationContent, PaginationItem, PaginationLink } from "@
 import ProductBatchForm from './productBatchForm';
 import { format, parseISO } from 'date-fns';
 import { Button } from './ui/button';
-import { Trash2 } from 'lucide-react';
+import { LoaderCircle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useProductStore } from '@/store/product';
+import { ProductDetailsSkeleton } from './helpers/ProductDetailsSkeleton';
 
 type ProductDetailsInfoProps = {
   id: string;
 };
 
 function ProductBatch({ id }: ProductDetailsInfoProps) {
+  const { productDetails } = useProductStore();
   const [productInfos, setProductInfos] = useState<BatchType | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -59,19 +62,22 @@ function ProductBatch({ id }: ProductDetailsInfoProps) {
 
   function handlePageChange(page: string | null, label: string) {
     if (!(label === "Próximo &raquo;" && page === null)) {
-        getProductBatch(id, page)
-          .then((response) => {
-            setProductInfos(response);
-            console.log(response)
-          })
-          .catch((error) => {
-            console.error("Error fetching products:", error)
-          })
-          .finally(() => {
-            setLoading(false)
-          })
-      }
+      getProductBatch(id, page)
+        .then((response) => {
+          setProductInfos(response);
+          console.log(response)
+        })
+        .catch((error) => {
+          console.error("Error fetching products:", error)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
+  }
 
+  if (!productDetails) {
+    return <ProductDetailsSkeleton />
   }
 
   return (
@@ -81,11 +87,12 @@ function ProductBatch({ id }: ProductDetailsInfoProps) {
           <CardTitle className="text-2xl">Lotes</CardTitle>
           <CardDescription>Visualize e edite os lotes do produto</CardDescription>
         </div>
+        <ProductBatchForm selectedProduct={id} updateBatchList={updateBatchList} />
       </CardHeader>
       {
         productInfos != null && productInfos.data.length > 0 ? (
           <Card className="border-none shadow-lg">
-            <CardContent className="p-0">
+            <CardContent className="">
               <Table>
                 <TableHeader className="bg-slate-50 dark:bg-slate-800">
                   <TableRow>

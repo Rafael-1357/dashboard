@@ -63,7 +63,7 @@ function ProductBatchForm({ formType = null, editingBatch, selectedProduct, upda
               form.setValue('expiration_date', editingBatch.expiration_date.split('T')[0]);
               form.setValue('sold_out', editingBatch.sold_out);
             }}>
-              <Edit  />
+              <Edit  className="text-slate-500"/>
             </Button>
           ) : (
             <Button disabled={selectedProduct == null} onClick={() => { form.reset() }}>
